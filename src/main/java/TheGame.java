@@ -4,7 +4,7 @@ import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 
-import static com.googlecode.lanterna.TextColor.ANSI.CYAN;
+import static com.googlecode.lanterna.TextColor.ANSI.*;
 
 public class TheGame {
 
@@ -24,6 +24,10 @@ public class TheGame {
         int oldPPosX = player.getPlayerX();
         int oldPPosY = player.getPlayerY();
 
+        Monster monster = new Monster(50, 20);
+        int oldMPosX = monster.getMonsterX();
+        int oldMPosY = monster.getMonsterY();
+
         KeyStroke keyStroke = null;
         KeyType type;
         boolean continueReadingInput = true;
@@ -31,6 +35,11 @@ public class TheGame {
         terminal.setCursorPosition(player.getPlayerX(), player.getPlayerY());
         terminal.setForegroundColor(CYAN);
         terminal.putCharacter(player.getPlayerChar());
+
+        terminal.setCursorPosition(monster.getMonsterX(), monster.getMonsterY());
+        terminal.setForegroundColor(RED);
+        terminal.putCharacter(monster.getMonsterChar());
+
         terminal.flush();
         while (continueReadingInput) {
 
@@ -38,12 +47,17 @@ public class TheGame {
                 Thread.sleep(5);
                 keyStroke = terminal.pollInput();
                 timer++;
+                //monsternas rörelser - två gånger i sekunden?
+                if (timer % 100 == 0) {
+
+                }
+                //Kollar om det börjar närma sig tid för väggen att växa - förslag att något ljud varnar då
 //                for(int i = 50; i > 0; i = i - 10) {
 //                    if ((timer + i) % 1000 == 0){
 //                        //makeSound
 //                    }
 //                }
-                if (timer % 1000 == 0 && timer < 9000) {
+                if (timer % 1000 == 0 && timer < 10000) {
                     terminal.resetColorAndSGR();
                     drawWall(++startCol,++startRow,--cols,--rows,terminal);
                 }
