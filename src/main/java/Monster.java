@@ -2,6 +2,8 @@ public class Monster {
     private int monsterX;
     private int monsterY;
     private char monsterChar = '\u2620';
+    //ta bort!!
+    private String bla;
 
     public Monster(int x, int y) {
         monsterX = x;
