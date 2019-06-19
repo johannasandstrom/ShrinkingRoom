@@ -43,13 +43,24 @@ public class TheGame {
         terminal.flush();
         while (continueReadingInput) {
 
+            oldMPosX = monster.getMonsterX();
+            oldMPosY = monster.getMonsterY();
+
             do {
                 Thread.sleep(5);
                 keyStroke = terminal.pollInput();
                 timer++;
                 //monsternas rörelser - två gånger i sekunden?
                 if (timer % 100 == 0) {
-
+                    if (player.getPlayerY() > monster.getMonsterY()) {
+                        monster.setMonsterY(oldMPosY + 1);
+                    } else if (player.getPlayerY() < monster.getMonsterY()) {
+                        monster.setMonsterY(oldMPosY - 1);
+                    } else if (player.getPlayerX() > monster.getMonsterX()) {
+                        monster.setMonsterY(oldMPosX + 1);
+                    } else {
+                        monster.setMonsterY(oldMPosX - 1);
+                    }
                 }
                 //Kollar om det börjar närma sig tid för väggen att växa - förslag att något ljud varnar då
 //                for(int i = 50; i > 0; i = i - 10) {
@@ -93,9 +104,18 @@ public class TheGame {
 
             terminal.setCursorPosition(oldPPosX, oldPPosY);
             terminal.putCharacter(' ');
+
             terminal.setCursorPosition(player.getPlayerX(), player.getPlayerY());
             terminal.setForegroundColor(CYAN);
             terminal.putCharacter(player.getPlayerChar());
+
+            terminal.setCursorPosition(oldMPosX, oldMPosY);
+            terminal.putCharacter(' ');
+
+            terminal.setCursorPosition(monster.getMonsterX(), monster.getMonsterY());
+            terminal.setForegroundColor(RED);
+            terminal.putCharacter(monster.getMonsterChar());
+
             terminal.flush();
 
             if(isWall(player.getPlayerX(), player.getPlayerY(), startCol, startRow) || isWall(player.getPlayerX(), player.getPlayerY(), cols - 1, rows - 1)){
