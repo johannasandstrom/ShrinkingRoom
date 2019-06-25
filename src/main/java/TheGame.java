@@ -52,13 +52,25 @@ public class TheGame {
                 timer++;
                 //monsternas rörelser - två gånger i sekunden?
                 if (timer % 100 == 0) {
-                    if (player.getPlayerY() > monster.getMonsterY()) {
+                    if (player.getPlayerY() > monster.getMonsterY() && player.getPlayerX() > monster.getMonsterX()) {
                         monster.setMonsterY(oldMPosY + 1);
+                        monster.setMonsterX(oldMPosX + 1);
+                    } else if (player.getPlayerY() < monster.getMonsterY() && player.getPlayerX() > monster.getMonsterX()) {
+                        monster.setMonsterY(oldMPosY - 1);
+                        monster.setMonsterX(oldMPosX + 1);
+                    } else if (player.getPlayerY() < monster.getMonsterY() && player.getPlayerX() < monster.getMonsterX()) {
+                        monster.setMonsterY(oldMPosY - 1);
+                        monster.setMonsterX(oldMPosX - 1);
+                    } else if (player.getPlayerY() > monster.getMonsterY() && player.getPlayerX() < monster.getMonsterX()) {
+                        monster.setMonsterY(oldMPosY + 1);
+                        monster.setMonsterX(oldMPosX - 1);
                     } else if (player.getPlayerY() < monster.getMonsterY()) {
                         monster.setMonsterY(oldMPosY - 1);
+                    } else if (player.getPlayerY() > monster.getMonsterY()) {
+                        monster.setMonsterY(oldMPosY + 1);
                     } else if (player.getPlayerX() > monster.getMonsterX()) {
                         monster.setMonsterY(oldMPosX + 1);
-                    } else {
+                    } else if (player.getPlayerX() < monster.getMonsterX()){
                         monster.setMonsterY(oldMPosX - 1);
                     }
                 }

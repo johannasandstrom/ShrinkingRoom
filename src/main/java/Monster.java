@@ -2,7 +2,7 @@ public class Monster {
     private int monsterX;
     private int monsterY;
 //    private char monsterChar = '\u2620';
-    private char monsterChar = '\u23f3';
+    private char monsterChar = '\u2622';
 
     public Monster(int x, int y) {
         monsterX = x;
