@@ -37,7 +37,7 @@ public class TheGame {
             do {
                 Thread.sleep(5);
                 keyStroke = terminal.pollInput();
-                timer++;
+                timer++; //TODO if timer < 9000 annars behövs inte göras?
 //                for(int i = 50; i > 0; i = i - 10) {
 //                    if ((timer + i) % 1000 == 0){
 //                        //makeSound
@@ -45,6 +45,19 @@ public class TheGame {
 //                }
                 if (timer % 1000 == 0 && timer < 9000) {
                     terminal.resetColorAndSGR();
+                    //**********************************
+                    System.out.print(startCol + " " + cols);
+                    if (player.getPlayerX()==startCol+1) player.setPlayerX(player.getPlayerX()+1);
+                    if (player.getPlayerX()==cols-1) player.setPlayerX(player.getPlayerX()-1);
+                    if (player.getPlayerY()==startRow+1) player.setPlayerY(player.getPlayerY()+1);
+                    if (player.getPlayerY()==rows-1) player.setPlayerY(player.getPlayerY()-1);
+                    terminal.setCursorPosition(oldPPosX, oldPPosY);
+                    terminal.putCharacter(' ');
+                    terminal.setCursorPosition(player.getPlayerX(), player.getPlayerY());
+                    //terminal.setForegroundColor(CYAN);
+                    terminal.putCharacter(player.getPlayerChar());
+                    terminal.flush();
+                    //***********************************
                     drawWall(++startCol,++startRow,--cols,--rows,terminal);
                 }
             } while (keyStroke == null);
