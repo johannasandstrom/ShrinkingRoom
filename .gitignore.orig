@@ -1,0 +1,11 @@
+.idea/
+target/classes/Monster.class
+target/classes/TheGame$1.class
+target/classes/TheGame.class
+target/classes/Player.class
+<<<<<<< HEAD
+.gitignore.orig
+target/classes/META-INF/ShrinkingRoom.kotlin_module
+=======
+target/
+>>>>>>> c99136f559d0abb8f434588533e4f525411f622e
