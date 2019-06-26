@@ -1,5 +1,2 @@
-.idea/
-target/classes/Monster.class
-target/classes/TheGame$1.class
-target/classes/TheGame.class
-target/classes/Player.class
+*.class
+*.xml
