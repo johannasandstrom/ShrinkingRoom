@@ -4,26 +4,23 @@ import java.awt.*;
 public class Item {
     private int itemX;
     private int itemY;
-    private Image apple;
+    private char itemChar;
 
-    public Item() {
-        ImageIcon iia = new ImageIcon("src/resources/apple.png");
-        apple = iia.getImage();
+    public Item(int itemX, int itemY) {
+        itemChar = '\u2665';
+        this.itemX = itemX;
+        this.itemY = itemY;
     }
 
     public int getItemX() {
         return itemX;
     }
 
-    public void setItemX(int itemX) {
-        this.itemX = itemX;
-    }
-
     public int getItemY() {
         return itemY;
     }
 
-    public void setItemY(int itemY) {
-        this.itemY = itemY;
+    public char getItemChar() {
+        return itemChar;
     }
 }

@@ -4,6 +4,8 @@ import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 import static com.googlecode.lanterna.TextColor.ANSI.*;
 
 public class TheGame {
@@ -25,7 +27,7 @@ public class TheGame {
 
         Monster monster = new Monster(50, 20);
 
-        Item star = new Item('\u2605');
+        Item item = new Item(startCol + ThreadLocalRandom.current().nextInt(cols - startCol), startRow + ThreadLocalRandom.current().nextInt(rows - startRow));
 
         KeyStroke keyStroke = null;
         KeyType type;
@@ -36,8 +38,12 @@ public class TheGame {
         terminal.putCharacter(player.getPlayerChar());
 
         terminal.setCursorPosition(monster.getMonsterX(), monster.getMonsterY());
-        terminal.setForegroundColor(RED);
+        terminal.setForegroundColor(GREEN);
         terminal.putCharacter(monster.getMonsterChar());
+
+        terminal.setCursorPosition(item.getItemX(), item.getItemY());
+        terminal.setForegroundColor(RED);
+        terminal.putCharacter(item.getItemChar());
 
         terminal.flush();
         while (continueReadingInput) {
@@ -148,7 +154,7 @@ public class TheGame {
         terminal.setForegroundColor(BLACK);
         terminal.putCharacter('X');
         terminal.setCursorPosition(monster.getMonsterX(), monster.getMonsterY());
-        terminal.setForegroundColor(RED);
+        terminal.setForegroundColor(GREEN);
         terminal.putCharacter(monster.getMonsterChar());
         terminal.flush();
 
