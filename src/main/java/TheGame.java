@@ -78,7 +78,8 @@ public class TheGame {
                     terminal.setForegroundColor(CYAN);
                     terminal.putCharacter(player.getPlayerChar());
                     terminal.flush();
-                    //************move player when roomif (monster.getMonsterX() == startCol + 1) monster.setMonsterX(monster.getMonsterX() + 1);
+                    //************move player when room
+                    if (monster.getMonsterX() == startCol + 1) monster.setMonsterX(monster.getMonsterX() + 1);
                     if (monster.getMonsterX() == cols - 2) monster.setMonsterX(monster.getMonsterX() - 1);
                     if (monster.getMonsterY() == startRow + 1) monster.setMonsterY(monster.getMonsterY() + 1);
                     if (monster.getMonsterY() == rows - 2) monster.setMonsterY(monster.getMonsterY() - 1);
