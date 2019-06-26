@@ -52,29 +52,13 @@ public class TheGame {
                 timer++;
                 //monsternas rörelser - två gånger i sekunden?
                 if (timer % 100 == 0) {
-                    if (player.getPlayerY() > monster.getMonsterY() && player.getPlayerX() > monster.getMonsterX()) {
-                        monster.setMonsterY(oldMPosY + 1);
-                        monster.setMonsterX(oldMPosX + 1);
-                    } else if (player.getPlayerY() < monster.getMonsterY() && player.getPlayerX() > monster.getMonsterX()) {
-                        monster.setMonsterY(oldMPosY - 1);
-                        monster.setMonsterX(oldMPosX + 1);
-                    } else if (player.getPlayerY() < monster.getMonsterY() && player.getPlayerX() < monster.getMonsterX()) {
-                        monster.setMonsterY(oldMPosY - 1);
-                        monster.setMonsterX(oldMPosX - 1);
-                    } else if (player.getPlayerY() > monster.getMonsterY() && player.getPlayerX() < monster.getMonsterX()) {
-                        monster.setMonsterY(oldMPosY + 1);
-                        monster.setMonsterX(oldMPosX - 1);
-                    } else if (player.getPlayerY() < monster.getMonsterY()) {
-                        monster.setMonsterY(oldMPosY - 1);
-                    } else if (player.getPlayerY() > monster.getMonsterY()) {
-                        monster.setMonsterY(oldMPosY + 1);
-                    } else if (player.getPlayerX() > monster.getMonsterX()) {
-                        monster.setMonsterY(oldMPosX + 1);
-                    } else if (player.getPlayerX() < monster.getMonsterX()){
-                        monster.setMonsterY(oldMPosX - 1);
-                    }
+                    monsterMovement(player, monster);
+                    terminal.setCursorPosition(oldMPosX, oldMPosY);
+                    terminal.setForegroundColor(RED);
+                    terminal.putCharacter(monster.getMonsterChar());
+                    terminal.flush();
                 }
-                //Kollar om det börjar närma sig tid för väggen att växa - förslag att något ljud varnar då
+//                //Kollar om det börjar närma sig tid för väggen att växa - förslag att något ljud varnar då
 //                for(int i = 50; i > 0; i = i - 10) {
 //                    if ((timer + i) % 1000 == 0){
 //                        //makeSound
@@ -82,7 +66,7 @@ public class TheGame {
 //                }
                 if (timer % 1000 == 0 && timer < 10000) {
                     terminal.resetColorAndSGR();
-                    drawWall(++startCol,++startRow,--cols,--rows,terminal);
+                    drawWall(++startCol, ++startRow, --cols, --rows, terminal);
                 }
             } while (keyStroke == null);
             type = keyStroke.getKeyType();
@@ -97,20 +81,20 @@ public class TheGame {
 
             switch (type) {
                 case ArrowUp:
-                    if (!isWall(player.getPlayerX(),player.getPlayerY()-1,startCol, startRow))
-                        player.setPlayerY(oldPPosY-1);
+                    if (!isWall(player.getPlayerX(), player.getPlayerY() - 1, startCol, startRow))
+                        player.setPlayerY(oldPPosY - 1);
                     break;
                 case ArrowDown:
-                    if (!isWall(player.getPlayerX(),player.getPlayerY()+1,cols-1, rows-1))
-                        player.setPlayerY(oldPPosY+1);
+                    if (!isWall(player.getPlayerX(), player.getPlayerY() + 1, cols - 1, rows - 1))
+                        player.setPlayerY(oldPPosY + 1);
                     break;
                 case ArrowRight:
-                    if (!isWall(player.getPlayerX()+1,player.getPlayerY(),cols-1, rows-1))
-                        player.setPlayerX(oldPPosX+1);
+                    if (!isWall(player.getPlayerX() + 1, player.getPlayerY(), cols - 1, rows - 1))
+                        player.setPlayerX(oldPPosX + 1);
                     break;
                 case ArrowLeft:
-                    if (!isWall(player.getPlayerX()-1,player.getPlayerY(),startCol, startRow))
-                        player.setPlayerX(oldPPosX-1);
+                    if (!isWall(player.getPlayerX() - 1, player.getPlayerY(), startCol, startRow))
+                        player.setPlayerX(oldPPosX - 1);
                     break;
             }
 
@@ -130,7 +114,7 @@ public class TheGame {
 
             terminal.flush();
 
-            if(isWall(player.getPlayerX(), player.getPlayerY(), startCol, startRow) || isWall(player.getPlayerX(), player.getPlayerY(), cols - 1, rows - 1)){
+            if (isWall(player.getPlayerX(), player.getPlayerY(), startCol, startRow) || isWall(player.getPlayerX(), player.getPlayerY(), cols - 1, rows - 1)) {
                 //Game over - text över skärmen!!! + Spräng-ljud
             }
 //            // Handle monsters
@@ -201,6 +185,20 @@ public class TheGame {
             //}
         }
         return isWall;
+    }
+
+    public static void monsterMovement(Player player, Monster monster) {
+        int pX = player.getPlayerX(), pY = player.getPlayerY();
+        int mX = monster.getMonsterX(), mY = monster.getMonsterY();
+        if ((Math.abs(pX - mX)) > (Math.abs(pY - mY))) {
+            if (pX - mX > 0) monster.setMonsterX(monster.getMonsterX() + 1);
+            else if (pX - mX < 0) monster.setMonsterX(monster.getMonsterX() - 1);
+            else return;
+        } else if ((Math.abs(pX - mX)) < (Math.abs(pY - mY))) {
+            if (pY - mY > 0) monster.setMonsterY(monster.getMonsterY() + 1);
+            else if (pY - mY < 0) monster.setMonsterY(monster.getMonsterY() - 1);
+            else return;
+        }
     }
 
 }
