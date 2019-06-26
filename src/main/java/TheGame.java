@@ -13,12 +13,11 @@ public class TheGame {
         Terminal terminal = terminalFactory.createTerminal();
         terminal.setCursorVisible(false);
 
-        int timer = 0;
-
         int cols = terminal.getTerminalSize().getColumns();
         int rows = terminal.getTerminalSize().getRows();
         int startCol = 0, startRow = 0;
         drawWall(startCol, startRow, cols, rows, terminal);
+        int timer = 0;
 
         Player player = new Player(10, 10);
         int oldPPosX = player.getPlayerX();
@@ -49,22 +48,34 @@ public class TheGame {
             do {
                 Thread.sleep(5);
                 keyStroke = terminal.pollInput();
-                timer++;
                 //monsternas rörelser - två gånger i sekunden?
-                if (timer % 100 == 0) {
-                    monsterMovement(player, monster);
-                    terminal.setCursorPosition(oldMPosX, oldMPosY);
-                    terminal.setForegroundColor(RED);
-                    terminal.putCharacter(monster.getMonsterChar());
-                    terminal.flush();
+
+                //move enemy at interval
+                if (monster.getTimer() % 80 == 0) {
+                    monsterMovement(player, monster, terminal);
+                    monster.setTimer(1);
                 }
+                monster.setTimer(monster.getTimer() + 1);
+
+                //}
 //                //Kollar om det börjar närma sig tid för väggen att växa - förslag att något ljud varnar då
 //                for(int i = 50; i > 0; i = i - 10) {
 //                    if ((timer + i) % 1000 == 0){
 //                        //makeSound
 //                    }
 //                }
+                timer++;
                 if (timer % 1000 == 0 && timer < 10000) {
+                    if (monster.getMonsterX() == startCol + 1) monster.setMonsterX(monster.getMonsterX() + 1);
+                    if (monster.getMonsterX() == cols - 2) monster.setMonsterX(monster.getMonsterX() - 1);
+                    if (monster.getMonsterY() == startRow + 1) monster.setMonsterY(monster.getMonsterY() + 1);
+                    if (monster.getMonsterY() == rows - 2) monster.setMonsterY(monster.getMonsterY() - 1);
+                    terminal.setCursorPosition(oldPPosX, oldPPosY);
+                    terminal.putCharacter(' ');
+                    terminal.setCursorPosition(monster.getMonsterX(), monster.getMonsterY());
+                    terminal.setForegroundColor(RED);
+                    terminal.putCharacter(monster.getMonsterChar());
+                    terminal.flush();
                     terminal.resetColorAndSGR();
                     drawWall(++startCol, ++startRow, --cols, --rows, terminal);
                 }
@@ -99,46 +110,16 @@ public class TheGame {
             }
 
             terminal.setCursorPosition(oldPPosX, oldPPosY);
+            terminal.setForegroundColor(BLACK);
             terminal.putCharacter(' ');
-
             terminal.setCursorPosition(player.getPlayerX(), player.getPlayerY());
             terminal.setForegroundColor(CYAN);
             terminal.putCharacter(player.getPlayerChar());
-
-            terminal.setCursorPosition(oldMPosX, oldMPosY);
-            terminal.putCharacter(' ');
-
-            terminal.setCursorPosition(monster.getMonsterX(), monster.getMonsterY());
-            terminal.setForegroundColor(RED);
-            terminal.putCharacter(monster.getMonsterChar());
-
             terminal.flush();
 
             if (isWall(player.getPlayerX(), player.getPlayerY(), startCol, startRow) || isWall(player.getPlayerX(), player.getPlayerY(), cols - 1, rows - 1)) {
                 //Game over - text över skärmen!!! + Spräng-ljud
             }
-//            // Handle monsters
-//            for (Position monster : monsters) {
-//                terminal.setCursorPosition(monster.x, monster.y);
-//                terminal.putCharacter(' ');
-//
-//                if (player.x > monster.x) {
-//                    monster.x++;
-//                }
-//                else if (player.x < monster.x) {
-//                    monster.x--;
-//                }
-//                if (player.y > monster.y) {
-//                    monster.y++;
-//                }
-//                else if (player.y < monster.y) {
-//                    monster.y--;
-//                }
-//
-//                terminal.setCursorPosition(monster.x, monster.y);
-//                terminal.putCharacter('X');
-//            }
-//
 //            // Is player alive?
 //            for (Position monster : monsters) {
 //                if (monster.x == player.x && monster.y == player.y) {
@@ -187,7 +168,7 @@ public class TheGame {
         return isWall;
     }
 
-    public static void monsterMovement(Player player, Monster monster) {
+    public static void monsterMovement(Player player, Monster monster, Terminal terminal) throws Exception {
         int pX = player.getPlayerX(), pY = player.getPlayerY();
         int mX = monster.getMonsterX(), mY = monster.getMonsterY();
         if ((Math.abs(pX - mX)) > (Math.abs(pY - mY))) {
@@ -199,6 +180,14 @@ public class TheGame {
             else if (pY - mY < 0) monster.setMonsterY(monster.getMonsterY() - 1);
             else return;
         }
+        terminal.setCursorPosition(mX,mY);
+        terminal.setForegroundColor(BLACK);
+        terminal.putCharacter('X');
+        terminal.setCursorPosition(monster.getMonsterX(), monster.getMonsterY());
+        terminal.setForegroundColor(RED);
+        terminal.putCharacter(monster.getMonsterChar());
+        terminal.flush();
+
     }
 
 }

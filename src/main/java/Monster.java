@@ -1,6 +1,7 @@
 public class Monster extends Thread {
     private int monsterX;
     private int monsterY;
+    private int timer=1;
 //    private char monsterChar = '\u2620';
     private char monsterChar = '\u2622';
 
@@ -27,5 +28,13 @@ public class Monster extends Thread {
 
     public char getMonsterChar() {
         return monsterChar;
+    }
+
+    public int getTimer() {
+        return timer;
+    }
+
+    public void setTimer(int timer) {
+        this.timer = timer;
     }
 }
