@@ -32,6 +32,7 @@ public class TheGame {
         KeyType type;
         boolean continueReadingInput = true;
 
+        
         while (continueReadingInput) {
             do {
                 Thread.sleep(5);
