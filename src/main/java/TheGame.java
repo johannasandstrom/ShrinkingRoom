@@ -24,14 +24,13 @@ public class TheGame {
         List<Monster> monsterList = new ArrayList<>();
         Player player = new Player();
         Item item = new Item();
+        Level lev = new Level();
 
-        newLevel(level, monsterList, terminal, player, item);
+        newLevel(level, monsterList, terminal, player, item, lev);
 
         KeyStroke keyStroke = null;
         KeyType type;
         boolean continueReadingInput = true;
-
-        terminal.flush();
 
         while (continueReadingInput) {
             do {
@@ -96,7 +95,7 @@ public class TheGame {
             }
 
             if (monsterList.size() < 1) {
-                newLevel(level, monsterList, terminal, player, item);
+                newLevel(level, monsterList, terminal, player, item, lev);
             }
 
         }
@@ -184,27 +183,28 @@ public class TheGame {
         terminal.flush();
     }
 
-    public static void newLevel(int level, List<Monster> monsterList, Terminal terminal, Player player, Item item) throws Exception {
+    public static void newLevel(int level, List<Monster> monsterList, Terminal terminal, Player player, Item item, Level lev) throws Exception {
         level++;
         terminal.clearScreen();
-        int cols = terminal.getTerminalSize().getColumns();
-        int rows = terminal.getTerminalSize().getRows();
-        int startCol = 0, startRow = 0;
-        drawWall(startCol, startRow, cols, rows, terminal);
+        lev.setCols(terminal.getTerminalSize().getColumns());
+        lev.setRows(terminal.getTerminalSize().getRows());
+        lev.setStartCol(0);
+        lev.setStartRow(0);
+        drawWall(lev.getStartCol(), lev.getStartRow(), lev.getCols(), lev.getRows(), terminal);
         for (int i = 0; i < level; i++) {
             monsterList.add(new Monster());
         }
 
         for(Monster monster : monsterList){
-            monster.setMonsterX(startCol + ThreadLocalRandom.current().nextInt(cols - startCol));
-            monster.setMonsterY(startRow + ThreadLocalRandom.current().nextInt(rows - startRow));
+            monster.setMonsterX(lev.getStartCol() + ThreadLocalRandom.current().nextInt(lev.getCols() - lev.getStartCol()));
+            monster.setMonsterY(lev.getStartRow() + ThreadLocalRandom.current().nextInt(lev.getRows() - lev.getStartRow()));
         }
 
-        player.setPlayerX(startCol + ThreadLocalRandom.current().nextInt(cols - startCol));
-        player.setPlayerY(startRow + ThreadLocalRandom.current().nextInt(rows - startRow));
+        player.setPlayerX(lev.getStartCol() + ThreadLocalRandom.current().nextInt(lev.getCols() - lev.getStartCol()));
+        player.setPlayerY(lev.getStartRow() + ThreadLocalRandom.current().nextInt(lev.getRows() - lev.getStartRow()));
 
-        item.setItemX(startCol + ThreadLocalRandom.current().nextInt(cols - startCol));
-        item.setItemY(startRow + ThreadLocalRandom.current().nextInt(rows - startRow));
+        item.setItemX(lev.getStartCol() + ThreadLocalRandom.current().nextInt(lev.getCols() - lev.getStartCol()));
+        item.setItemY(lev.getStartRow() + ThreadLocalRandom.current().nextInt(lev.getRows() - lev.getStartRow()));
 
         terminal.setCursorPosition(player.getPlayerX(), player.getPlayerY());
         terminal.setForegroundColor(CYAN);
@@ -219,6 +219,8 @@ public class TheGame {
         terminal.setCursorPosition(item.getItemX(), item.getItemY());
         terminal.setForegroundColor(RED);
         terminal.putCharacter(item.getItemChar());
+
+        terminal.flush();
     }
 
 }
