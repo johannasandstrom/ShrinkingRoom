@@ -1,4 +1,4 @@
-public class Monster {
+public class Monster extends Thread {
     private int monsterX;
     private int monsterY;
 //    private char monsterChar = '\u2620';
