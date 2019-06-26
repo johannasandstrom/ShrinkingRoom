@@ -24,8 +24,9 @@ public class TheGame {
         int oldPPosY = player.getPlayerY();
 
         Monster monster = new Monster(50, 20);
-        int oldMPosX = monster.getMonsterX();
-        int oldMPosY = monster.getMonsterY();
+
+        Item star = new Item('\u2605');
+
 
         KeyStroke keyStroke = null;
         KeyType type;
@@ -63,7 +64,6 @@ public class TheGame {
                 timer++;
                 if (timer % 1000 == 0 && timer < 10000) {
                     //************move player when room shrinks******************
-                    System.out.print("Startcol="+startCol+" | Col="+cols+" | PlayerX="+player.getPlayerX());
                     if (player.getPlayerX()==startCol+1) player.setPlayerX(player.getPlayerX()+1);
                     if (player.getPlayerX()==cols-2) player.setPlayerX(player.getPlayerX()-1);
                     if (player.getPlayerY()==startRow+1) player.setPlayerY(player.getPlayerY()+1);
