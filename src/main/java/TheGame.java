@@ -45,19 +45,19 @@ public class TheGame {
 //                }
                 if (timer % 1000 == 0 && timer < 9000) {
                     terminal.resetColorAndSGR();
-                    //**********************************
-                    System.out.print(startCol + " " + cols);
+                    //************move player when room shrinks******************
+                    System.out.print("Startcol="+startCol+" | Col="+cols+" | PlayerX="+player.getPlayerX());
                     if (player.getPlayerX()==startCol+1) player.setPlayerX(player.getPlayerX()+1);
-                    if (player.getPlayerX()==cols-1) player.setPlayerX(player.getPlayerX()-1);
+                    if (player.getPlayerX()==cols-2) player.setPlayerX(player.getPlayerX()-1);
                     if (player.getPlayerY()==startRow+1) player.setPlayerY(player.getPlayerY()+1);
-                    if (player.getPlayerY()==rows-1) player.setPlayerY(player.getPlayerY()-1);
+                    if (player.getPlayerY()==rows-2) player.setPlayerY(player.getPlayerY()-1);
                     terminal.setCursorPosition(oldPPosX, oldPPosY);
                     terminal.putCharacter(' ');
                     terminal.setCursorPosition(player.getPlayerX(), player.getPlayerY());
-                    //terminal.setForegroundColor(CYAN);
+                    terminal.setForegroundColor(CYAN);
                     terminal.putCharacter(player.getPlayerChar());
                     terminal.flush();
-                    //***********************************
+                    //************move player when room shrinks******************
                     drawWall(++startCol,++startRow,--cols,--rows,terminal);
                 }
             } while (keyStroke == null);
@@ -136,6 +136,7 @@ public class TheGame {
     }
 
     public static void drawWall(int startCol, int startRow, int cols, int rows, Terminal terminal) throws Exception {
+        terminal.resetColorAndSGR();
         for (int i = startCol; i < cols; i++) {
             terminal.setCursorPosition(i, startRow);
             terminal.putCharacter('\u2588');
