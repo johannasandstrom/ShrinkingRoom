@@ -27,7 +27,6 @@ public class TheGame {
 
         Item star = new Item('\u2605');
 
-
         KeyStroke keyStroke = null;
         KeyType type;
         boolean continueReadingInput = true;
@@ -47,45 +46,16 @@ public class TheGame {
                 Thread.sleep(5);
                 keyStroke = terminal.pollInput();
 
-                //move enemy at interval
+                //move monster at interval
                 if (monster.getTimer() % monster.getSpeedTimer() == 0) {
                     monsterMovement(player, monster, terminal);
                     monster.setTimer(1);
                 }
                 monster.setTimer(monster.getTimer() + 1);
 
-//                //Kollar om det börjar närma sig tid för väggen att växa - förslag att något ljud varnar då
-//                for(int i = 50; i > 0; i = i - 10) {
-//                    if ((timer + i) % 1000 == 0){
-//                        //makeSound
-//                    }
-//                }
-
                 timer++;
                 if (timer % 1000 == 0 && timer < 10000) {
-                    //************move player when room shrinks******************
-                    if (player.getPlayerX()==startCol+1) player.setPlayerX(player.getPlayerX()+1);
-                    if (player.getPlayerX()==cols-2) player.setPlayerX(player.getPlayerX()-1);
-                    if (player.getPlayerY()==startRow+1) player.setPlayerY(player.getPlayerY()+1);
-                    if (player.getPlayerY()==rows-2) player.setPlayerY(player.getPlayerY()-1);
-                    terminal.setCursorPosition(oldPPosX, oldPPosY);
-                    terminal.putCharacter(' ');
-                    terminal.setCursorPosition(player.getPlayerX(), player.getPlayerY());
-                    terminal.setForegroundColor(CYAN);
-                    terminal.putCharacter(player.getPlayerChar());
-                    terminal.flush();
-                    //************move monster when room shrinks****************
-                    if (monster.getMonsterX() == startCol + 1) monster.setMonsterX(monster.getMonsterX() + 1);
-                    if (monster.getMonsterX() == cols - 2) monster.setMonsterX(monster.getMonsterX() - 1);
-                    if (monster.getMonsterY() == startRow + 1) monster.setMonsterY(monster.getMonsterY() + 1);
-                    if (monster.getMonsterY() == rows - 2) monster.setMonsterY(monster.getMonsterY() - 1);
-                    terminal.setCursorPosition(oldPPosX, oldPPosY);
-                    terminal.putCharacter(' ');
-                    terminal.setCursorPosition(monster.getMonsterX(), monster.getMonsterY());
-                    terminal.setForegroundColor(RED);
-                    terminal.putCharacter(monster.getMonsterChar());
-                    terminal.flush();
-                    terminal.resetColorAndSGR();
+                    prepareForWall(player, monster, startCol, startRow, cols, rows, terminal);
                     drawWall(++startCol,++startRow,--cols,--rows,terminal);
                 }
             } while (keyStroke == null);
@@ -125,19 +95,6 @@ public class TheGame {
             terminal.setForegroundColor(CYAN);
             terminal.putCharacter(player.getPlayerChar());
             terminal.flush();
-
-//            if (isWall(player.getPlayerX(), player.getPlayerY(), startCol, startRow) ||
-//                    isWall(player.getPlayerX(), player.getPlayerY(), cols - 1, rows - 1)) {
-//                //Game over - text över skärmen!!! + Spräng-ljud
-//            }
-//            // Is player alive?
-//            for (Position monster : monsters) {
-//                if (monster.x == player.x && monster.y == player.y) {
-//                    continueReadingInput = false;
-//                    terminal.bell(); // primitive death sound!
-//                    System.out.println("Game Over!");
-//                }
-//            }
 
         }
 
@@ -195,6 +152,33 @@ public class TheGame {
         terminal.putCharacter(monster.getMonsterChar());
         terminal.flush();
 
+    }
+
+    public static void prepareForWall (Player player, Monster monster, int startCol, int startRow, int cols, int rows, Terminal terminal) throws Exception {
+        int oldPX = player.getPlayerX(), oldPY=player.getPlayerY();
+        int oldMX = monster.getMonsterX(), oldMY = monster.getMonsterY();
+        //************move player when room shrinks******************
+        if (player.getPlayerX()==startCol+1) player.setPlayerX(player.getPlayerX()+1);
+        if (player.getPlayerX()==cols-2) player.setPlayerX(player.getPlayerX()-1);
+        if (player.getPlayerY()==startRow+1) player.setPlayerY(player.getPlayerY()+1);
+        if (player.getPlayerY()==rows-2) player.setPlayerY(player.getPlayerY()-1);
+        terminal.setCursorPosition(oldPX, oldPY);
+        terminal.putCharacter(' ');
+        terminal.setCursorPosition(player.getPlayerX(), player.getPlayerY());
+        terminal.setForegroundColor(CYAN);
+        terminal.putCharacter(player.getPlayerChar());
+        terminal.flush();
+        //************move monster when room shrinks****************
+        if (monster.getMonsterX() == startCol + 1) monster.setMonsterX(monster.getMonsterX() + 1);
+        if (monster.getMonsterX() == cols - 2) monster.setMonsterX(monster.getMonsterX() - 1);
+        if (monster.getMonsterY() == startRow + 1) monster.setMonsterY(monster.getMonsterY() + 1);
+        if (monster.getMonsterY() == rows - 2) monster.setMonsterY(monster.getMonsterY() - 1);
+        terminal.setCursorPosition(oldMX, oldMY);
+        terminal.putCharacter(' ');
+        terminal.setCursorPosition(monster.getMonsterX(), monster.getMonsterY());
+        terminal.setForegroundColor(RED);
+        terminal.putCharacter(monster.getMonsterChar());
+        terminal.flush();
     }
 
 }
