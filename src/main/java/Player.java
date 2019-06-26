@@ -1,4 +1,4 @@
-public class Player extends Thread{
+public class Player{
     private int playerX;
     private int playerY;
     private char playerChar = '\u263B';

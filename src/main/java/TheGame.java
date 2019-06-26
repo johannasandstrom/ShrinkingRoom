@@ -20,8 +20,8 @@ public class TheGame {
         int timer = 0;
 
         Player player = new Player(10, 10);
-        int oldPPosX = player.getPlayerX();
-        int oldPPosY = player.getPlayerY();
+        int oldPPosX;
+        int oldPPosY;
 
         Monster monster = new Monster(50, 20);
 

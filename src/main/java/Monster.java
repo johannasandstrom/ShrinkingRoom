@@ -1,4 +1,4 @@
-public class Monster extends Thread {
+public class Monster {
     private int monsterX;
     private int monsterY;
     private int timer=1;
