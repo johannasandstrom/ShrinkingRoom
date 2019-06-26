@@ -1,11 +1,18 @@
+import java.time.LocalTime;
+
 public class Player extends Thread{
     private int playerX;
     private int playerY;
     private char playerChar = '\u263B';
+    private int lives;
+    private LocalTime hitTime;
+
 
     public Player(int x, int y) {
         playerX = x;
         playerY = y;
+        lives=3;
+        hitTime=LocalTime.now();
     }
 
     public int getPlayerX() {
@@ -26,5 +33,21 @@ public class Player extends Thread{
 
     public char getPlayerChar() {
         return playerChar;
+    }
+
+    public int getLives() {
+        return lives;
+    }
+
+    public void setLives(int lives) {
+        this.lives = lives;
+    }
+
+    public LocalTime getHitTime() {
+        return hitTime;
+    }
+
+    public void setHitTime(LocalTime hitTime) {
+        this.hitTime = hitTime;
     }
 }

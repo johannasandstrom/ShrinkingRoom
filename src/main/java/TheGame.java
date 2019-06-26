@@ -1,10 +1,12 @@
-import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 
 import static com.googlecode.lanterna.TextColor.ANSI.*;
+
+import java.time.Duration;
+import java.time.LocalTime;
 
 public class TheGame {
 
@@ -18,10 +20,11 @@ public class TheGame {
         int startCol = 0, startRow = 0;
         drawWall(startCol, startRow, cols, rows, terminal);
         int timer = 0;
+        LocalTime time = LocalTime.now().plus(Duration.ofSeconds(4));
 
         Player player = new Player(10, 10);
-        int oldPPosX = player.getPlayerX();
-        int oldPPosY = player.getPlayerY();
+        int oldPPosX;
+        int oldPPosY;
 
         Monster monster = new Monster(50, 20);
 
@@ -49,6 +52,7 @@ public class TheGame {
                 //move monster at interval
                 if (monster.getTimer() % monster.getSpeedTimer() == 0) {
                     monsterMovement(player, monster, terminal);
+                    hitPlayer(player, monster);
                     monster.setTimer(1);
                 }
                 monster.setTimer(monster.getTimer() + 1);
@@ -56,7 +60,7 @@ public class TheGame {
                 timer++;
                 if (timer % 1000 == 0 && timer < 10000) {
                     prepareForWall(player, monster, startCol, startRow, cols, rows, terminal);
-                    drawWall(++startCol,++startRow,--cols,--rows,terminal);
+                    drawWall(++startCol, ++startRow, --cols, --rows, terminal);
                 }
             } while (keyStroke == null);
             type = keyStroke.getKeyType();
@@ -87,7 +91,7 @@ public class TheGame {
                         player.setPlayerX(oldPPosX - 1);
                     break;
             }
-
+            hitPlayer(player, monster);
             terminal.setCursorPosition(oldPPosX, oldPPosY);
             terminal.setForegroundColor(BLACK);
             terminal.putCharacter(' ');
@@ -144,7 +148,7 @@ public class TheGame {
             else if (pY - mY < 0) monster.setMonsterY(monster.getMonsterY() - 1);
             else return;
         }
-        terminal.setCursorPosition(mX,mY);
+        terminal.setCursorPosition(mX, mY);
         terminal.setForegroundColor(BLACK);
         terminal.putCharacter('X');
         terminal.setCursorPosition(monster.getMonsterX(), monster.getMonsterY());
@@ -154,14 +158,14 @@ public class TheGame {
 
     }
 
-    public static void prepareForWall (Player player, Monster monster, int startCol, int startRow, int cols, int rows, Terminal terminal) throws Exception {
-        int oldPX = player.getPlayerX(), oldPY=player.getPlayerY();
+    public static void prepareForWall(Player player, Monster monster, int startCol, int startRow, int cols, int rows, Terminal terminal) throws Exception {
+        int oldPX = player.getPlayerX(), oldPY = player.getPlayerY();
         int oldMX = monster.getMonsterX(), oldMY = monster.getMonsterY();
         //************move player when room shrinks******************
-        if (player.getPlayerX()==startCol+1) player.setPlayerX(player.getPlayerX()+1);
-        if (player.getPlayerX()==cols-2) player.setPlayerX(player.getPlayerX()-1);
-        if (player.getPlayerY()==startRow+1) player.setPlayerY(player.getPlayerY()+1);
-        if (player.getPlayerY()==rows-2) player.setPlayerY(player.getPlayerY()-1);
+        if (player.getPlayerX() == startCol + 1) player.setPlayerX(player.getPlayerX() + 1);
+        if (player.getPlayerX() == cols - 2) player.setPlayerX(player.getPlayerX() - 1);
+        if (player.getPlayerY() == startRow + 1) player.setPlayerY(player.getPlayerY() + 1);
+        if (player.getPlayerY() == rows - 2) player.setPlayerY(player.getPlayerY() - 1);
         terminal.setCursorPosition(oldPX, oldPY);
         terminal.putCharacter(' ');
         terminal.setCursorPosition(player.getPlayerX(), player.getPlayerY());
@@ -179,6 +183,17 @@ public class TheGame {
         terminal.setForegroundColor(RED);
         terminal.putCharacter(monster.getMonsterChar());
         terminal.flush();
+    }
+
+    public static void hitPlayer(Player p, Monster m) {
+        if (p.getPlayerX() == m.getMonsterX() && p.getPlayerY() == m.getMonsterY()) {
+            long iTime = Duration.between(p.getHitTime(), LocalTime.now()).getSeconds();
+            if (iTime > 5) {
+                p.setLives(p.getLives() - 1);
+                System.out.print("DEAD! Lives left: " + p.getLives());
+                p.setHitTime(LocalTime.now());
+            }
+        }
     }
 
 }
