@@ -19,6 +19,8 @@ public class TheGame {
         drawWall(startCol, startRow, cols, rows, terminal);
         int timer = 0;
 
+        BackgroundMusic bm = new BackgroundMusic();
+
         Player player = new Player(10, 10);
         int oldPPosX = player.getPlayerX();
         int oldPPosY = player.getPlayerY();
@@ -41,6 +43,7 @@ public class TheGame {
 
         terminal.flush();
         while (continueReadingInput) {
+            //bm.run();
 
             do {
                 Thread.sleep(5);
@@ -63,11 +66,11 @@ public class TheGame {
                 timer++;
                 if (timer % 1000 == 0 && timer < 10000) {
                     //************move player when room shrinks******************
-                    System.out.print("Startcol="+startCol+" | Col="+cols+" | PlayerX="+player.getPlayerX());
-                    if (player.getPlayerX()==startCol+1) player.setPlayerX(player.getPlayerX()+1);
-                    if (player.getPlayerX()==cols-2) player.setPlayerX(player.getPlayerX()-1);
-                    if (player.getPlayerY()==startRow+1) player.setPlayerY(player.getPlayerY()+1);
-                    if (player.getPlayerY()==rows-2) player.setPlayerY(player.getPlayerY()-1);
+                    System.out.print("Startcol=" + startCol + " | Col=" + cols + " | PlayerX=" + player.getPlayerX());
+                    if (player.getPlayerX() == startCol + 1) player.setPlayerX(player.getPlayerX() + 1);
+                    if (player.getPlayerX() == cols - 2) player.setPlayerX(player.getPlayerX() - 1);
+                    if (player.getPlayerY() == startRow + 1) player.setPlayerY(player.getPlayerY() + 1);
+                    if (player.getPlayerY() == rows - 2) player.setPlayerY(player.getPlayerY() - 1);
                     terminal.setCursorPosition(oldPPosX, oldPPosY);
                     terminal.putCharacter(' ');
                     terminal.setCursorPosition(player.getPlayerX(), player.getPlayerY());
@@ -86,7 +89,7 @@ public class TheGame {
                     terminal.putCharacter(monster.getMonsterChar());
                     terminal.flush();
                     terminal.resetColorAndSGR();
-                    drawWall(++startCol,++startRow,--cols,--rows,terminal);
+                    drawWall(++startCol, ++startRow, --cols, --rows, terminal);
                 }
             } while (keyStroke == null);
             type = keyStroke.getKeyType();
@@ -187,7 +190,7 @@ public class TheGame {
             else if (pY - mY < 0) monster.setMonsterY(monster.getMonsterY() - 1);
             else return;
         }
-        terminal.setCursorPosition(mX,mY);
+        terminal.setCursorPosition(mX, mY);
         terminal.setForegroundColor(BLACK);
         terminal.putCharacter('X');
         terminal.setCursorPosition(monster.getMonsterX(), monster.getMonsterY());
