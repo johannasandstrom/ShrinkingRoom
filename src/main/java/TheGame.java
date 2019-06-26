@@ -2,9 +2,7 @@ import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
-
 import static com.googlecode.lanterna.TextColor.ANSI.*;
-
 import java.time.Duration;
 import java.time.LocalTime;
 
@@ -28,6 +26,9 @@ public class TheGame {
 
         Monster monster = new Monster(50, 20);
         Item star = new Item('\u2605');
+
+        Thread bm = new Thread(new Music());
+        bm.start();
 
         KeyStroke keyStroke = null;
         KeyType type;
@@ -66,6 +67,7 @@ public class TheGame {
 
             if (type == KeyType.Escape) {
                 continueReadingInput = false;
+                bm.stop();
                 terminal.close();
             }
 
