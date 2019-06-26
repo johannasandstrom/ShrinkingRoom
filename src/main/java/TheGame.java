@@ -27,7 +27,6 @@ public class TheGame {
         int oldPPosY;
 
         Monster monster = new Monster(50, 20);
-
         Item star = new Item('\u2605');
 
         KeyStroke keyStroke = null;
