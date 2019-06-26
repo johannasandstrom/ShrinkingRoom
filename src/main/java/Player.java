@@ -3,9 +3,7 @@ public class Player{
     private int playerY;
     private char playerChar = '\u263B';
 
-    public Player(int x, int y) {
-        playerX = x;
-        playerY = y;
+    public Player() {
     }
 
     public int getPlayerX() {
