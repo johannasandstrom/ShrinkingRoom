@@ -16,36 +16,43 @@ public class TheGame {
     private static boolean continueReadingInput = true;
 
     public static void main(String[] args) throws Exception {
+        //Skapar spelfönster
         DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();
         Terminal terminal = terminalFactory.createTerminal();
         terminal.setCursorVisible(false);
 
+        //old.Pos. används för att rita över inaktuella chars
         int oldPPosX, oldPPosY, timer = 0;
 
+        //skapar objekt monster, spelare och item
         List<Monster> monsterList = new ArrayList<>();
         Player player = new Player();
-
         Item item = new Item();
 
+        //skapar de skyltar som visas upp vid ny level, samt game over
         Sign[] signs = new Sign[2];
         Sign levelClearSign = new Sign("LevelClearSign.txt");
         Sign gameOverSign = new Sign("GameOverSign.txt");
         signs[0] = levelClearSign;
         signs[1] = gameOverSign;
 
+        //level-klassen hanterar den aktuella storleken på spelplanen
         Level lev = new Level();
         newLevel(monsterList, terminal, player, item, lev);
 
+        //Thread hanterar bakgrundsmusiken
         Thread bm = new Thread(new Music());
         bm.start();
 
+        //statusBar ritar upp level och antal liv
         statusBar(terminal, player, lev);
 
+        //objekt som hanterar user input
         KeyStroke keyStroke;
         KeyType type;
         continueReadingInput = true;
 
-
+        //körs tills man väljer att avsluta spelet
         while (continueReadingInput) {
             statusBar(terminal, player, lev);
             do {
@@ -80,6 +87,7 @@ public class TheGame {
                     }
                 } while (monsterHitItem);
 
+                //stoppar muren från att växa efter x antal omgångar
                 if (timer % 1000 == 0 && timer < 9000) {
                     prepareForWall(item, player, monsterList, lev.getStartCol(), lev.getStartRow(), lev.getCols(), lev.getRows(), terminal);
                     lev.setStartCol(lev.getStartCol() + 1);
