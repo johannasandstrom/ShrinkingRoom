@@ -6,6 +6,7 @@ public class Player {
     private char playerChar = '\u263B';
     private int lives;
     private LocalTime hitTime;
+    private boolean isHit;
 
 
     public Player() {
@@ -48,4 +49,5 @@ public class Player {
     public void setHitTime(LocalTime hitTime) {
         this.hitTime = hitTime;
     }
+
 }

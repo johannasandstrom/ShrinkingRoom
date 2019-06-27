@@ -146,7 +146,11 @@ public class TheGame {
             terminal.setForegroundColor(BLACK);
             terminal.putCharacter(' ');
             terminal.setCursorPosition(player.getPlayerX(), player.getPlayerY());
-            terminal.setForegroundColor(CYAN);
+            if(Duration.between(player.getHitTime(), LocalTime.now()).getSeconds() < 5) {
+                terminal.setForegroundColor(WHITE);
+            } else {
+                terminal.setForegroundColor(CYAN);
+            }
             terminal.putCharacter(player.getPlayerChar());
             terminal.flush();
 
@@ -256,7 +260,11 @@ public class TheGame {
         terminal.setCursorPosition(oldPX, oldPY);
         terminal.putCharacter(' ');
         terminal.setCursorPosition(player.getPlayerX(), player.getPlayerY());
-        terminal.setForegroundColor(CYAN);
+        if(Duration.between(player.getHitTime(), LocalTime.now()).getSeconds() < 5) {
+            terminal.setForegroundColor(WHITE);
+        } else {
+            terminal.setForegroundColor(CYAN);
+        }
         terminal.putCharacter(player.getPlayerChar());
         //************move monster when room shrinks****************
         for (Monster monster : mList) {
@@ -292,7 +300,6 @@ public class TheGame {
                 if (iTime > 5) {
                     p.setLives(p.getLives() - 1);
                     p.setHitTime(LocalTime.now());
-
                 }
             }
         }
