@@ -45,15 +45,30 @@ public class TheGame {
                 timer++;
 
                 //move monster at interval
-                for (Monster monster : monsterList) {
-                    if (monster.getTimer() % monster.getSpeedTimer() == 0) {
-                        monsterMovement(player, monster, terminal);
-                        hitPlayer(player, monsterList);
-                        monster.setTimer(1);
+                boolean monsterHitItem = false;
+                do {
+                    for (Monster monster : monsterList) {
+                        if (monster.getTimer() % monster.getSpeedTimer() == 0) {
+                            monsterMovement(player, monster, item, terminal);
+                            hitPlayer(player, monsterList);
+                            if (hitItem(item, monster)) {
+                                item.setItemX(1000);
+                                item.setItemY(1000);
+                                monsterHitItem = true;
+                                monsterList.add(new Monster());
+                                monsterList.get(monsterList.size() - 1).setMonsterX(lev.getStartCol() + 1 + ThreadLocalRandom.current().nextInt(lev.getCols() - lev.getStartCol() - 2));
+                                monsterList.get(monsterList.size() - 1).setMonsterY(lev.getStartRow() + 1 + ThreadLocalRandom.current().nextInt(lev.getRows() - lev.getStartRow() - 2));
+                                break;
+                            } else {
+                                monsterHitItem = false;
+                            }
+                            monster.setTimer(1);
+                        }
+                        monster.setTimer(monster.getTimer() + 1);
                     }
-                    monster.setTimer(monster.getTimer() + 1);
+                } while (monsterHitItem);
 
-
+                for (Monster monster : monsterList) {
                     if (timer % 1000 == 0 && timer < 10000) {
                         prepareForWall(item, player, monster, lev.getStartCol(), lev.getStartRow(), lev.getCols(), lev.getRows(), terminal);
                         lev.setStartCol(lev.getStartCol() + 1);
@@ -150,18 +165,33 @@ public class TheGame {
         return isWall;
     }
 
-    public static void monsterMovement(Player player, Monster monster, Terminal terminal) throws Exception {
+    public static void monsterMovement(Player player, Monster monster, Item item, Terminal terminal) throws Exception {
         int pX = player.getPlayerX(), pY = player.getPlayerY();
         int mX = monster.getMonsterX(), mY = monster.getMonsterY();
-        if ((Math.abs(pX - mX)) >= (Math.abs(pY - mY))) {
-            if (pX - mX > 0) monster.setMonsterX(monster.getMonsterX() + 1);
-            else if (pX - mX < 0) monster.setMonsterX(monster.getMonsterX() - 1);
-            else return;
-        } else if ((Math.abs(pX - mX)) < (Math.abs(pY - mY))) {
-            if (pY - mY > 0) monster.setMonsterY(monster.getMonsterY() + 1);
-            else if (pY - mY < 0) monster.setMonsterY(monster.getMonsterY() - 1);
-            else return;
+        int iX = item.getItemX(), iY = item.getItemY();
+
+        if (isMonsterCloserToPlayer(monster, player, item)) {
+            if ((Math.abs(pX - mX)) >= (Math.abs(pY - mY))) {
+                if (pX - mX > 0) monster.setMonsterX(monster.getMonsterX() + 1);
+                else if (pX - mX < 0) monster.setMonsterX(monster.getMonsterX() - 1);
+                else return;
+            } else if ((Math.abs(pX - mX)) < (Math.abs(pY - mY))) {
+                if (pY - mY > 0) monster.setMonsterY(monster.getMonsterY() + 1);
+                else if (pY - mY < 0) monster.setMonsterY(monster.getMonsterY() - 1);
+                else return;
+            }
+        } else {
+            if ((Math.abs(iX - mX)) >= (Math.abs(iY - mY))) {
+                if (iX - mX > 0) monster.setMonsterX(monster.getMonsterX() + 1);
+                else if (iX - mX < 0) monster.setMonsterX(monster.getMonsterX() - 1);
+                else return;
+            } else if ((Math.abs(iX - mX)) < (Math.abs(iY - mY))) {
+                if (iY - mY > 0) monster.setMonsterY(monster.getMonsterY() + 1);
+                else if (iY - mY < 0) monster.setMonsterY(monster.getMonsterY() - 1);
+                else return;
+            }
         }
+
         terminal.setCursorPosition(mX, mY);
         terminal.setForegroundColor(BLACK);
         terminal.putCharacter(' ');
@@ -169,7 +199,6 @@ public class TheGame {
         terminal.setForegroundColor(GREEN);
         terminal.putCharacter(monster.getMonsterChar());
         terminal.flush();
-
     }
 
     public static void prepareForWall(Item item, Player player, Monster monster, int startCol, int startRow, int cols, int rows, Terminal terminal) throws Exception {
@@ -215,11 +244,18 @@ public class TheGame {
                 long iTime = Duration.between(p.getHitTime(), LocalTime.now()).getSeconds();
                 if (iTime > 5) {
                     p.setLives(p.getLives() - 1);
-                    System.out.print("DEAD! Lives left: " + p.getLives());
+                    System.out.println("DEAD! Lives left: " + p.getLives());
                     p.setHitTime(LocalTime.now());
                 }
             }
         }
+    }
+
+    public static boolean hitItem(Item i, Monster monster) {
+        if (i.getItemX() == monster.getMonsterX() && i.getItemY() == monster.getMonsterY()) {
+            return true;
+        }
+        return false;
     }
 
     public static void newLevel(List<Monster> monsterList, Terminal terminal, Player player, Item item, Level lev) throws Exception {
@@ -263,5 +299,17 @@ public class TheGame {
         System.out.println(monsterList.size());
     }
 
+    public static boolean isMonsterCloserToPlayer(Monster monster, Player player, Item item) {
+        int xDistToPlayer = Math.abs(monster.getMonsterX() - player.getPlayerX());
+        int yDistToPlayer = Math.abs(monster.getMonsterY() - player.getPlayerY());
+        int xDistToItem = Math.abs(monster.getMonsterX() - item.getItemX());
+        int yDistToItem = Math.abs(monster.getMonsterY() - item.getItemY());
+        double distToPlayer = Math.sqrt(xDistToPlayer * xDistToPlayer + yDistToPlayer * yDistToPlayer);
+        double distToItem = Math.sqrt(xDistToItem * xDistToItem + yDistToItem * yDistToItem);
 
+        if (distToPlayer < distToItem) {
+            return true;
+        }
+        return false;
+    }
 }
