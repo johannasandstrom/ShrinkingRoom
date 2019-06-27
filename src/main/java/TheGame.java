@@ -56,7 +56,6 @@ public class TheGame {
 
                 if (timer % 1000 == 0 && timer < 10000) {
                     prepareForWall(item, player, monsterList, lev.getStartCol(), lev.getStartRow(), lev.getCols(), lev.getRows(), terminal);
-                    System.out.println("Timer=" + timer);
                     lev.setStartCol(lev.getStartCol() + 1);
                     lev.setStartRow(lev.getStartRow() + 1);
                     lev.setRows(lev.getRows() - 1);
@@ -125,8 +124,6 @@ public class TheGame {
         int startRow = lev.getStartRow();
         int cols = lev.getCols();
         int rows = lev.getRows();
-        System.out.println("Start " + startCol + "x" + startRow);
-        System.out.println("End " + cols + "x" + rows);
         terminal.resetColorAndSGR();
         for (int i = startCol; i < cols; i++) {
             terminal.setCursorPosition(i, startRow);
