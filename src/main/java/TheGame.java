@@ -122,7 +122,9 @@ public class TheGame {
                     break;
             }
             hitPlayer(player, monsterList);
-
+            if(player.getLives() == 0) {
+                gameOver(player, terminal, lev, item, bm);
+            }
             terminal.setCursorPosition(item.getItemX(), item.getItemY());
             terminal.setForegroundColor(RED);
             terminal.putCharacter(item.getItemChar());
@@ -272,8 +274,33 @@ public class TheGame {
                 if (iTime > 5) {
                     p.setLives(p.getLives() - 1);
                     p.setHitTime(LocalTime.now());
+
                 }
             }
+        }
+    }
+
+    public static void gameOver(Player p, Terminal terminal, Level lev, Item item, Thread bm) throws Exception {
+        displayMessage(signs[1].getSignDesign(), terminal);
+        KeyStroke stroke = null;
+        KeyType type;
+        boolean wait = true;
+
+        while (stroke == null) {
+            Thread.sleep(5);
+            stroke = terminal.pollInput();
+        }
+
+        stroke = terminal.pollInput();
+
+        if (stroke.getCharacter() == 'y') {
+            List<Monster> monsterList = new ArrayList<>();
+            p.setLives(3);
+            lev.level = 0;
+            newLevel(monsterList, terminal, p, item, lev);
+        } else if (stroke.getCharacter() == 'n') {
+            terminal.close();
+            bm.stop();
         }
     }
 
