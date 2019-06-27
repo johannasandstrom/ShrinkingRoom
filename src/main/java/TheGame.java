@@ -14,6 +14,7 @@ import java.time.Duration;
 import java.time.LocalTime;
 
 public class TheGame {
+    static boolean continueReadingInput = true;
 
     public static void main(String[] args) throws Exception {
         DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();
@@ -43,7 +44,7 @@ public class TheGame {
 
         KeyStroke keyStroke = null;
         KeyType type;
-        boolean continueReadingInput = true;
+        continueReadingInput = true;
 
 
         while (continueReadingInput) {
@@ -123,7 +124,7 @@ public class TheGame {
             }
             hitPlayer(player, monsterList);
             if (player.getLives() == 0) {
-                gameOver(player, terminal, lev, item, bm, signs);
+                gameOver(player, terminal, lev, item, bm, signs, monsterList);
             }
             terminal.setCursorPosition(item.getItemX(), item.getItemY());
             terminal.setForegroundColor(RED);
@@ -147,7 +148,7 @@ public class TheGame {
             }
 
             if (monsterList.size() < 1) {
-                displayMessage(signs[0].getSignDesign(), terminal);
+                displayMessage(signs[0].getSignDesign(), terminal, 0);
                 newLevel(monsterList, terminal, player, item, lev);
                 timer = 0;
             }
@@ -280,25 +281,32 @@ public class TheGame {
         }
     }
 
-    public static void gameOver(Player p, Terminal terminal, Level lev, Item item, Thread bm, Sign[] signs) throws Exception {
-        displayMessage(signs[1].getSignDesign(), terminal);
-        KeyStroke stroke = null;
-        KeyType type;
-        boolean wait = true;
-
-        while (stroke == null) {
-            Thread.sleep(5);
-            stroke = terminal.pollInput();
-        }
-
-        stroke = terminal.pollInput();
-
-        if (stroke.getCharacter() == 'y') {
-            List<Monster> monsterList = new ArrayList<>();
+    public static void gameOver(Player p, Terminal terminal, Level lev, Item item, Thread bm, Sign[] signs, List<Monster> monsterList) throws Exception {
+        displayMessage(signs[1].getSignDesign(), terminal, 1);
+        boolean hasResponded = false;
+        KeyStroke keyStroke;
+        char c;
+        do {
+            do {
+                Thread.sleep(5);
+                keyStroke = terminal.pollInput();
+            } while (keyStroke == null);
+            switch (keyStroke.getKeyType()) {
+                case Character:
+                    if (keyStroke.getCharacter() == 'y' || keyStroke.getCharacter() == 'n') hasResponded = true;
+                    break;
+                default:
+                    break;
+            }
+        } while (!hasResponded);
+        c = keyStroke.getCharacter();
+        if (c == 'y') {
+            monsterList.clear();
             p.setLives(3);
             lev.level = 0;
             newLevel(monsterList, terminal, p, item, lev);
-        } else if (stroke.getCharacter() == 'n') {
+        } else {
+            continueReadingInput = false;
             terminal.close();
             bm.stop();
         }
@@ -378,7 +386,7 @@ public class TheGame {
         terminal.flush();
     }
 
-    public static void displayMessage(char[][] signC, Terminal terminal) throws Exception {
+    public static void displayMessage(char[][] signC, Terminal terminal, int endGame) throws Exception {
         for (int i = 0; i < signC.length; i++) {
             for (int j = 0; j < signC[i].length; j++) {
                 char blockType;
@@ -406,23 +414,23 @@ public class TheGame {
         }
         terminal.resetColorAndSGR();
         terminal.flush();
-//        if (endGame != 1) {
-        boolean hasPressedC = false;
-        KeyStroke keyStroke;
-        char c;
-        do {
+        if (endGame != 1) {
+            boolean hasPressedC = false;
+            KeyStroke keyStroke;
+            char c;
             do {
-                Thread.sleep(5);
-                keyStroke = terminal.pollInput();
-            } while (keyStroke == null);
-            switch (keyStroke.getKeyType()) {
-                case Character:
-                    if (keyStroke.getCharacter() == 'c') hasPressedC = true;
-                    break;
-                default:
-                    break;
-            }
-        } while (!hasPressedC);
-//        }
+                do {
+                    Thread.sleep(5);
+                    keyStroke = terminal.pollInput();
+                } while (keyStroke == null);
+                switch (keyStroke.getKeyType()) {
+                    case Character:
+                        if (keyStroke.getCharacter() == 'c') hasPressedC = true;
+                        break;
+                    default:
+                        break;
+                }
+            } while (!hasPressedC);
+        }
     }
 }
