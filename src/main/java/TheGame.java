@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static com.googlecode.lanterna.TextColor.ANSI.*;
+
 import java.time.Duration;
 import java.time.LocalTime;
 
@@ -18,15 +19,15 @@ public class TheGame {
         Terminal terminal = terminalFactory.createTerminal();
         terminal.setCursorVisible(false);
 
-        int oldPPosX, oldPPosY;
-        LocalTime time = LocalTime.now().plus(Duration.ofSeconds(4));
+        int oldPPosX, oldPPosY, timer = 0;
+        //LocalTime time = LocalTime.now().plus(Duration.ofSeconds(4));
 
-      
-List<Monster> monsterList = new ArrayList<>();
+
+        List<Monster> monsterList = new ArrayList<Monster>();
         Player player = new Player();
         Item item = new Item();
         Level lev = new Level();
-newLevel(monsterList, terminal, player, item, lev);
+        newLevel(monsterList, terminal, player, item, lev);
 
 
         Thread bm = new Thread(new Music());
@@ -47,7 +48,7 @@ newLevel(monsterList, terminal, player, item, lev);
                 for (Monster monster : monsterList) {
                     if (monster.getTimer() % monster.getSpeedTimer() == 0) {
                         monsterMovement(player, monster, terminal);
-hitPlayer(player,monster);
+                        hitPlayer(player, monsterList);
                         monster.setTimer(1);
                     }
                     monster.setTimer(monster.getTimer() + 1);
@@ -62,7 +63,9 @@ hitPlayer(player,monster);
                         drawWall(lev.getStartCol(), lev.getStartRow(), lev.getCols(), lev.getRows(), terminal);
                     }
                 }
-            } while (keyStroke == null);
+            }
+
+            while (keyStroke == null);
             type = keyStroke.getKeyType();
 
             if (type == KeyType.Escape) {
@@ -92,7 +95,7 @@ hitPlayer(player,monster);
                         player.setPlayerX(oldPPosX - 1);
                     break;
             }
-            hitPlayer(player, monster);
+            hitPlayer(player, monsterList);
             terminal.setCursorPosition(oldPPosX, oldPPosY);
             terminal.setForegroundColor(BLACK);
             terminal.putCharacter(' ');
@@ -196,15 +199,20 @@ hitPlayer(player,monster);
         terminal.flush();
     }
 
-    public static void hitPlayer(Player p, Monster m) {
-        if (p.getPlayerX() == m.getMonsterX() && p.getPlayerY() == m.getMonsterY()) {
-            long iTime = Duration.between(p.getHitTime(), LocalTime.now()).getSeconds();
-            if (iTime > 5) {
-                p.setLives(p.getLives() - 1);
-                System.out.print("DEAD! Lives left: " + p.getLives());
-                p.setHitTime(LocalTime.now());
+    public static void hitPlayer(Player p, List<Monster> mList) {
+        for (Monster m : mList) {
+            if (p.getPlayerX() == m.getMonsterX() && p.getPlayerY() == m.getMonsterY()) {
+                long iTime = Duration.between(p.getHitTime(), LocalTime.now()).getSeconds();
+                if (iTime > 5) {
+                    p.setLives(p.getLives() - 1);
+                    System.out.print("DEAD! Lives left: " + p.getLives());
+                    p.setHitTime(LocalTime.now());
+                }
             }
-public static void newLevel(List<Monster> monsterList, Terminal terminal, Player player, Item item, Level lev) throws Exception {
+        }
+    }
+
+    public static void newLevel(List<Monster> monsterList, Terminal terminal, Player player, Item item, Level lev) throws Exception {
         lev.level++;
         terminal.clearScreen();
         lev.setCols(terminal.getTerminalSize().getColumns());
@@ -216,7 +224,7 @@ public static void newLevel(List<Monster> monsterList, Terminal terminal, Player
             monsterList.add(new Monster());
         }
 
-        for(Monster monster : monsterList){
+        for (Monster monster : monsterList) {
             monster.setMonsterX(lev.getStartCol() + 1 + ThreadLocalRandom.current().nextInt(lev.getCols() - lev.getStartCol() - 2));
             monster.setMonsterY(lev.getStartRow() + 1 + ThreadLocalRandom.current().nextInt(lev.getRows() - lev.getStartRow() - 2));
         }
@@ -245,5 +253,5 @@ public static void newLevel(List<Monster> monsterList, Terminal terminal, Player
         System.out.println(monsterList.size());
     }
 
-}
 
+}
