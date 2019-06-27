@@ -55,11 +55,11 @@ public class TheGame {
 
 
                     if (timer % 1000 == 0 && timer < 10000) {
+                        prepareForWall(item, player, monster, lev.getStartCol(), lev.getStartRow(), lev.getCols(), lev.getRows(), terminal);
                         lev.setStartCol(lev.getStartCol() + 1);
                         lev.setStartRow(lev.getStartRow() + 1);
                         lev.setRows(lev.getRows() - 1);
                         lev.setCols(lev.getCols() - 1);
-                        prepareForWall(player, monster, lev.getStartCol(), lev.getStartRow(), lev.getCols(), lev.getRows(), terminal);
                         drawWall(lev.getStartCol(), lev.getStartRow(), lev.getCols(), lev.getRows(), terminal);
                     }
                 }
@@ -164,7 +164,7 @@ public class TheGame {
         }
         terminal.setCursorPosition(mX, mY);
         terminal.setForegroundColor(BLACK);
-        terminal.putCharacter('X');
+        terminal.putCharacter(' ');
         terminal.setCursorPosition(monster.getMonsterX(), monster.getMonsterY());
         terminal.setForegroundColor(GREEN);
         terminal.putCharacter(monster.getMonsterChar());
@@ -172,9 +172,10 @@ public class TheGame {
 
     }
 
-    public static void prepareForWall(Player player, Monster monster, int startCol, int startRow, int cols, int rows, Terminal terminal) throws Exception {
+    public static void prepareForWall(Item item, Player player, Monster monster, int startCol, int startRow, int cols, int rows, Terminal terminal) throws Exception {
         int oldPX = player.getPlayerX(), oldPY = player.getPlayerY();
         int oldMX = monster.getMonsterX(), oldMY = monster.getMonsterY();
+        int oldIX = item.getItemX(), oldIY = item.getItemY();
         //************move player when room shrinks******************
         if (player.getPlayerX() == startCol + 1) player.setPlayerX(player.getPlayerX() + 1);
         if (player.getPlayerX() == cols - 2) player.setPlayerX(player.getPlayerX() - 1);
@@ -185,7 +186,6 @@ public class TheGame {
         terminal.setCursorPosition(player.getPlayerX(), player.getPlayerY());
         terminal.setForegroundColor(CYAN);
         terminal.putCharacter(player.getPlayerChar());
-        terminal.flush();
         //************move monster when room shrinks****************
         if (monster.getMonsterX() == startCol + 1) monster.setMonsterX(monster.getMonsterX() + 1);
         if (monster.getMonsterX() == cols - 2) monster.setMonsterX(monster.getMonsterX() - 1);
@@ -194,8 +194,18 @@ public class TheGame {
         terminal.setCursorPosition(oldMX, oldMY);
         terminal.putCharacter(' ');
         terminal.setCursorPosition(monster.getMonsterX(), monster.getMonsterY());
-        terminal.setForegroundColor(RED);
+        terminal.setForegroundColor(GREEN);
         terminal.putCharacter(monster.getMonsterChar());
+        //************move item when room shrinks****************
+        if (item.getItemX() == startCol + 1) item.setItemX(item.getItemX() + 1);
+        if (item.getItemX() == cols - 2) item.setItemX(item.getItemX() - 1);
+        if (item.getItemY() == startRow + 1) item.setItemY(item.getItemY() + 1);
+        if (item.getItemY() == rows - 2) item.setItemY(item.getItemY() - 1);
+        terminal.setCursorPosition(oldIX, oldIY);
+        terminal.putCharacter(' ');
+        terminal.setCursorPosition(item.getItemX(), item.getItemY());
+        terminal.setForegroundColor(RED);
+        terminal.putCharacter(item.getItemChar());
         terminal.flush();
     }
 
