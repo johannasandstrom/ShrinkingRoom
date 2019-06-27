@@ -9,8 +9,8 @@ public class Player {
 
 
     public Player() {
-        lives=3;
-        hitTime=LocalTime.now();
+        lives = 3;
+        hitTime = LocalTime.now();
     }
 
     public int getPlayerX() {

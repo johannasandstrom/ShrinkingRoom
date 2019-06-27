@@ -20,15 +20,14 @@ public class TheGame {
         terminal.setCursorVisible(false);
 
         int oldPPosX, oldPPosY, timer = 0;
-        //LocalTime time = LocalTime.now().plus(Duration.ofSeconds(4));
-
 
         List<Monster> monsterList = new ArrayList<Monster>();
         Player player = new Player();
+
         Item item = new Item();
+
         Level lev = new Level();
         newLevel(monsterList, terminal, player, item, lev);
-
 
         Thread bm = new Thread(new Music());
         bm.start();
@@ -112,6 +111,7 @@ public class TheGame {
 
             if (monsterList.size() < 1) {
                 newLevel(monsterList, terminal, player, item, lev);
+                timer=0;
             }
 
         }
