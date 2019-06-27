@@ -68,13 +68,13 @@ public class TheGame {
                 } while (monsterHitItem);
 
                 for (Monster monster : monsterList) {
-                    if (timer % 1000 == 0 && timer < 10000) {
-                        prepareForWall(item, player, monster, lev.getStartCol(), lev.getStartRow(), lev.getCols(), lev.getRows(), terminal);
+                    if (timer % 1000 == 0 && timer < 9000) {
+                        prepareForWall(item, player, monsterList, lev.getStartCol(), lev.getStartRow(), lev.getCols(), lev.getRows(), terminal);
                         lev.setStartCol(lev.getStartCol() + 1);
                         lev.setStartRow(lev.getStartRow() + 1);
                         lev.setRows(lev.getRows() - 1);
                         lev.setCols(lev.getCols() - 1);
-                        drawWall(lev.getStartCol(), lev.getStartRow(), lev.getCols(), lev.getRows(), terminal);
+                        drawWall(lev, terminal);
                     }
                 }
             }
