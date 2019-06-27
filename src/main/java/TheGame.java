@@ -33,11 +33,13 @@ public class TheGame {
         signs[0] = levelClearSign;
         signs[1] = gameOverSign;
 
-        Level lev = new Level();
-        newLevel(monsterList, terminal, player, item, lev);
-
+        Sfx clearLevel = new Sfx("clearLevel.wav");
+        Thread sfxClear = new Thread(clearLevel);
         Thread bm = new Thread(new Music());
         bm.start();
+
+        Level lev = new Level();
+        newLevel(monsterList, terminal, player, item, lev, sfxClear);
 
         statusBar(terminal, player, lev);
 
@@ -123,7 +125,7 @@ public class TheGame {
             }
             hitPlayer(player, monsterList);
             if (player.getLives() == 0) {
-                gameOver(player, terminal, lev, item, bm, signs, monsterList);
+                gameOver(player, terminal, lev, item, bm, signs, monsterList, sfxClear);
             }
             terminal.setCursorPosition(item.getItemX(), item.getItemY());
             terminal.setForegroundColor(RED);
@@ -148,7 +150,7 @@ public class TheGame {
 
             if (monsterList.size() < 1) {
                 displayMessage(signs[0].getSignDesign(), terminal, 0);
-                newLevel(monsterList, terminal, player, item, lev);
+                newLevel(monsterList, terminal, player, item, lev, sfxClear);
                 timer = 0;
             }
 
@@ -277,7 +279,7 @@ public class TheGame {
         }
     }
 
-    private static void gameOver(Player p, Terminal terminal, Level lev, Item item, Thread bm, Sign[] signs, List<Monster> monsterList) throws Exception {
+    private static void gameOver(Player p, Terminal terminal, Level lev, Item item, Thread bm, Sign[] signs, List<Monster> monsterList, Thread sfxClear) throws Exception {
         displayMessage(signs[1].getSignDesign(), terminal, 1);
         boolean hasResponded = false;
         KeyStroke keyStroke;
@@ -300,7 +302,7 @@ public class TheGame {
             monsterList.clear();
             p.setLives(3);
             lev.level = 0;
-            newLevel(monsterList, terminal, p, item, lev);
+            newLevel(monsterList, terminal, p, item, lev, sfxClear);
         } else {
             continueReadingInput = false;
             terminal.close();
@@ -315,7 +317,7 @@ public class TheGame {
         return false;
     }
 
-    private static void newLevel(List<Monster> monsterList, Terminal terminal, Player player, Item item, Level lev) throws Exception {
+    private static void newLevel(List<Monster> monsterList, Terminal terminal, Player player, Item item, Level lev, Thread sfxClear) throws Exception {
         lev.level++;
         terminal.clearScreen();
         lev.setCols(terminal.getTerminalSize().getColumns());
@@ -353,7 +355,7 @@ public class TheGame {
         terminal.putCharacter(item.getItemChar());
 
         terminal.flush();
-        System.out.println(monsterList.size());
+        sfxClear.start();
     }
 
     private static boolean isMonsterCloserToPlayer(Monster monster, Player player, Item item) {

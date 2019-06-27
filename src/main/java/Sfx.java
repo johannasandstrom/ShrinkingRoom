@@ -2,11 +2,12 @@ import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
 
-public class Music implements Runnable {
+public class Sfx implements Runnable {
 
-    private String fileLocation = "backgroundmusic.wav";
+    private String fileLocation = "clearLevel.wav";
 
-    public Music() {
+    public Sfx(String fileLocation) {
+        this.fileLocation=fileLocation;
     }
 
     public void play() {
@@ -16,9 +17,7 @@ public class Music implements Runnable {
 
     @Override
     public void run() {
-//        while (true) {
-//            playSound(fileLocation);
-//        }
+            playSound(fileLocation);
     }
 
     private void playSound(String fileName) {
