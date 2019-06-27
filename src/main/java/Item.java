@@ -1,25 +1,31 @@
+import javax.swing.*;
+import java.awt.*;
+
 public class Item {
-    private char character;
-    int posX;
-    int posY;
+    private int itemX;
+    private int itemY;
+    private char itemChar = '\u2665';
 
-    public Item(char character) {
-        this.character = character;
+    public Item() {
     }
 
-    public int getPosX() {
-        return posX;
+    public int getItemX() {
+        return itemX;
     }
 
-    public void setPosX(int posX) {
-        this.posX = posX;
+    public void setItemX(int x) {
+        this.itemX = x;
     }
 
-    public int getPosY() {
-        return posY;
+    public int getItemY() {
+        return itemY;
     }
 
-    public void setPosY(int posY) {
-        this.posY = posY;
+    public void setItemY(int y) {
+        this.itemY = y;
+    }
+
+    public char getItemChar() {
+        return itemChar;
     }
 }

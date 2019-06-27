@@ -1,4 +1,4 @@
-public class Monster extends Thread {
+public class Monster {
     private int monsterX;
     private int monsterY;
     private int timer=1;
@@ -6,25 +6,23 @@ public class Monster extends Thread {
 //    private char monsterChar = '\u2620';
     private char monsterChar = '\u2622';
 
-    public Monster(int x, int y) {
-        monsterX = x;
-        monsterY = y;
+    public Monster() {
     }
 
     public int getMonsterX() {
         return monsterX;
     }
 
-    public void setMonsterX(int monsterX) {
-        this.monsterX = monsterX;
+    public void setMonsterX(int x) {
+        this.monsterX = x;
     }
 
     public int getMonsterY() {
         return monsterY;
     }
 
-    public void setMonsterY(int monsterY) {
-        this.monsterY = monsterY;
+    public void setMonsterY(int y) {
+        this.monsterY = y;
     }
 
     public char getMonsterChar() {

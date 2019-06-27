@@ -1,6 +1,6 @@
 import java.time.LocalTime;
 
-public class Player extends Thread{
+public class Player {
     private int playerX;
     private int playerY;
     private char playerChar = '\u263B';
@@ -8,9 +8,7 @@ public class Player extends Thread{
     private LocalTime hitTime;
 
 
-    public Player(int x, int y) {
-        playerX = x;
-        playerY = y;
+    public Player() {
         lives=3;
         hitTime=LocalTime.now();
     }
