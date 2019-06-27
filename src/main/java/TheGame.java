@@ -31,7 +31,7 @@ public class TheGame {
         Sign levelClearSign = new Sign("LevelClearSign.txt");
         Sign gameOverSign = new Sign("GameOverSign.txt");
         signs[0] = levelClearSign;
-        signs[1]=gameOverSign;
+        signs[1] = gameOverSign;
 
         Level lev = new Level();
         newLevel(monsterList, terminal, player, item, lev);
@@ -122,8 +122,8 @@ public class TheGame {
                     break;
             }
             hitPlayer(player, monsterList);
-            if(player.getLives() == 0) {
-                gameOver(player, terminal, lev, item, bm);
+            if (player.getLives() == 0) {
+                gameOver(player, terminal, lev, item, bm, signs);
             }
             terminal.setCursorPosition(item.getItemX(), item.getItemY());
             terminal.setForegroundColor(RED);
@@ -280,7 +280,7 @@ public class TheGame {
         }
     }
 
-    public static void gameOver(Player p, Terminal terminal, Level lev, Item item, Thread bm) throws Exception {
+    public static void gameOver(Player p, Terminal terminal, Level lev, Item item, Thread bm, Sign[] signs) throws Exception {
         displayMessage(signs[1].getSignDesign(), terminal);
         KeyStroke stroke = null;
         KeyType type;
