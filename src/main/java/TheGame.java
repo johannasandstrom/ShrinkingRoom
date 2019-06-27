@@ -51,17 +51,19 @@ public class TheGame {
                         monster.setTimer(1);
                     }
                     monster.setTimer(monster.getTimer() + 1);
-
-
-                    if (timer % 1000 == 0 && timer < 10000) {
-                        prepareForWall(item, player, monster, lev.getStartCol(), lev.getStartRow(), lev.getCols(), lev.getRows(), terminal);
-                        lev.setStartCol(lev.getStartCol() + 1);
-                        lev.setStartRow(lev.getStartRow() + 1);
-                        lev.setRows(lev.getRows() - 1);
-                        lev.setCols(lev.getCols() - 1);
-                        drawWall(lev.getStartCol(), lev.getStartRow(), lev.getCols(), lev.getRows(), terminal);
-                    }
                 }
+
+
+                if (timer % 1000 == 0 && timer < 10000) {
+                    prepareForWall(item, player, monsterList, lev.getStartCol(), lev.getStartRow(), lev.getCols(), lev.getRows(), terminal);
+                    System.out.println("Timer=" + timer);
+                    lev.setStartCol(lev.getStartCol() + 1);
+                    lev.setStartRow(lev.getStartRow() + 1);
+                    lev.setRows(lev.getRows() - 1);
+                    lev.setCols(lev.getCols() - 1);
+                    drawWall(lev,/*lev.getStartCol(), lev.getStartRow(), lev.getCols(), lev.getRows(), */terminal);
+                }
+
             }
 
             while (keyStroke == null);
@@ -111,14 +113,20 @@ public class TheGame {
 
             if (monsterList.size() < 1) {
                 newLevel(monsterList, terminal, player, item, lev);
-                timer=0;
+                timer = 0;
             }
 
         }
 
     }
 
-    public static void drawWall(int startCol, int startRow, int cols, int rows, Terminal terminal) throws Exception {
+    public static void drawWall(Level lev,/*int startCol, int startRow, int cols, int rows, */Terminal terminal) throws Exception {
+        int startCol = lev.getStartCol();
+        int startRow = lev.getStartRow();
+        int cols = lev.getCols();
+        int rows = lev.getRows();
+        System.out.println("Start " + startCol + "x" + startRow);
+        System.out.println("End " + cols + "x" + rows);
         terminal.resetColorAndSGR();
         for (int i = startCol; i < cols; i++) {
             terminal.setCursorPosition(i, startRow);
@@ -172,9 +180,8 @@ public class TheGame {
 
     }
 
-    public static void prepareForWall(Item item, Player player, Monster monster, int startCol, int startRow, int cols, int rows, Terminal terminal) throws Exception {
+    public static void prepareForWall(Item item, Player player, List<Monster> mList, int startCol, int startRow, int cols, int rows, Terminal terminal) throws Exception {
         int oldPX = player.getPlayerX(), oldPY = player.getPlayerY();
-        int oldMX = monster.getMonsterX(), oldMY = monster.getMonsterY();
         int oldIX = item.getItemX(), oldIY = item.getItemY();
         //************move player when room shrinks******************
         if (player.getPlayerX() == startCol + 1) player.setPlayerX(player.getPlayerX() + 1);
@@ -187,15 +194,18 @@ public class TheGame {
         terminal.setForegroundColor(CYAN);
         terminal.putCharacter(player.getPlayerChar());
         //************move monster when room shrinks****************
-        if (monster.getMonsterX() == startCol + 1) monster.setMonsterX(monster.getMonsterX() + 1);
-        if (monster.getMonsterX() == cols - 2) monster.setMonsterX(monster.getMonsterX() - 1);
-        if (monster.getMonsterY() == startRow + 1) monster.setMonsterY(monster.getMonsterY() + 1);
-        if (monster.getMonsterY() == rows - 2) monster.setMonsterY(monster.getMonsterY() - 1);
-        terminal.setCursorPosition(oldMX, oldMY);
-        terminal.putCharacter(' ');
-        terminal.setCursorPosition(monster.getMonsterX(), monster.getMonsterY());
-        terminal.setForegroundColor(GREEN);
-        terminal.putCharacter(monster.getMonsterChar());
+        for (Monster monster : mList) {
+            int oldMX = monster.getMonsterX(), oldMY = monster.getMonsterY();
+            if (monster.getMonsterX() == startCol + 1) monster.setMonsterX(monster.getMonsterX() + 1);
+            if (monster.getMonsterX() == cols - 2) monster.setMonsterX(monster.getMonsterX() - 1);
+            if (monster.getMonsterY() == startRow + 1) monster.setMonsterY(monster.getMonsterY() + 1);
+            if (monster.getMonsterY() == rows - 2) monster.setMonsterY(monster.getMonsterY() - 1);
+            terminal.setCursorPosition(oldMX, oldMY);
+            terminal.putCharacter(' ');
+            terminal.setCursorPosition(monster.getMonsterX(), monster.getMonsterY());
+            terminal.setForegroundColor(GREEN);
+            terminal.putCharacter(monster.getMonsterChar());
+        }
         //************move item when room shrinks****************
         if (item.getItemX() == startCol + 1) item.setItemX(item.getItemX() + 1);
         if (item.getItemX() == cols - 2) item.setItemX(item.getItemX() - 1);
@@ -215,7 +225,6 @@ public class TheGame {
                 long iTime = Duration.between(p.getHitTime(), LocalTime.now()).getSeconds();
                 if (iTime > 5) {
                     p.setLives(p.getLives() - 1);
-                    System.out.print("DEAD! Lives left: " + p.getLives());
                     p.setHitTime(LocalTime.now());
                 }
             }
@@ -229,7 +238,7 @@ public class TheGame {
         lev.setRows(terminal.getTerminalSize().getRows());
         lev.setStartCol(0);
         lev.setStartRow(0);
-        drawWall(lev.getStartCol(), lev.getStartRow(), lev.getCols(), lev.getRows(), terminal);
+        drawWall(lev,/*lev.getStartCol(), lev.getStartRow(), lev.getCols(), lev.getRows(),*/ terminal);
         for (int i = 0; i < lev.level; i++) {
             monsterList.add(new Monster());
         }
