@@ -1,3 +1,4 @@
+import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
@@ -26,11 +27,19 @@ public class TheGame {
 
         Item item = new Item();
 
+        Sign[] signs = new Sign[2];
+        Sign levelClearSign = new Sign("LevelClearSign.txt");
+        Sign gameOverSign = new Sign("GameOverSign.txt");
+        signs[0] = levelClearSign;
+        signs[1]=gameOverSign;
+
         Level lev = new Level();
         newLevel(monsterList, terminal, player, item, lev);
 
         Thread bm = new Thread(new Music());
         bm.start();
+
+        statusBar(terminal, player, lev);
 
         KeyStroke keyStroke = null;
         KeyType type;
@@ -38,10 +47,12 @@ public class TheGame {
 
 
         while (continueReadingInput) {
+            statusBar(terminal, player, lev);
             do {
                 Thread.sleep(5);
                 keyStroke = terminal.pollInput();
                 timer++;
+                statusBar(terminal, player, lev);
 
                 //move monster at interval
                 boolean monsterHitItem = false;
@@ -69,14 +80,14 @@ public class TheGame {
                     }
                 } while (monsterHitItem);
 
-                    if (timer % 1000 == 0 && timer < 9000) {
-                        prepareForWall(item, player, monsterList, lev.getStartCol(), lev.getStartRow(), lev.getCols(), lev.getRows(), terminal);
-                        lev.setStartCol(lev.getStartCol() + 1);
-                        lev.setStartRow(lev.getStartRow() + 1);
-                        lev.setRows(lev.getRows() - 1);
-                        lev.setCols(lev.getCols() - 1);
-                        drawWall(lev, terminal);
-                    }
+                if (timer % 1000 == 0 && timer < 9000) {
+                    prepareForWall(item, player, monsterList, lev.getStartCol(), lev.getStartRow(), lev.getCols(), lev.getRows(), terminal);
+                    lev.setStartCol(lev.getStartCol() + 1);
+                    lev.setStartRow(lev.getStartRow() + 1);
+                    lev.setRows(lev.getRows() - 1);
+                    lev.setCols(lev.getCols() - 1);
+                    drawWall(lev, terminal);
+                }
             }
 
             while (keyStroke == null);
@@ -111,6 +122,7 @@ public class TheGame {
                     break;
             }
             hitPlayer(player, monsterList);
+
             terminal.setCursorPosition(item.getItemX(), item.getItemY());
             terminal.setForegroundColor(RED);
             terminal.putCharacter(item.getItemChar());
@@ -124,7 +136,7 @@ public class TheGame {
 
             if (player.getPlayerX() == item.getItemX() && player.getPlayerY() == item.getItemY()) {
                 terminal.setForegroundColor(BLACK);
-                terminal.setCursorPosition(monsterList.get(monsterList.size()-1).getMonsterX(),monsterList.get(monsterList.size()-1).getMonsterY());
+                terminal.setCursorPosition(monsterList.get(monsterList.size() - 1).getMonsterX(), monsterList.get(monsterList.size() - 1).getMonsterY());
                 terminal.putCharacter(' ');
                 terminal.flush();
                 monsterList.remove(monsterList.size() - 1);
@@ -133,6 +145,7 @@ public class TheGame {
             }
 
             if (monsterList.size() < 1) {
+                displayMessage(signs[0].getSignDesign(), terminal);
                 newLevel(monsterList, terminal, player, item, lev);
                 timer = 0;
             }
@@ -324,5 +337,65 @@ public class TheGame {
             return true;
         }
         return false;
+    }
+
+    public static void statusBar(Terminal terminal, Player player, Level lev) throws Exception {
+        terminal.setForegroundColor(WHITE);
+        terminal.setBackgroundColor(BLUE);
+        String statusBar = "SHRINKING ROOM - LEVEL:" + lev.level + " - LIVES LEFT:" + player.getLives();
+        for (int i = 0; i < statusBar.length(); i++) {
+            terminal.setCursorPosition(i + 5, 0);
+            terminal.putCharacter(statusBar.charAt(i));
+        }
+        terminal.resetColorAndSGR();
+        terminal.flush();
+    }
+
+    public static void displayMessage(char[][] signC, Terminal terminal) throws Exception {
+        for (int i = 0; i < signC.length; i++) {
+            for (int j = 0; j < signC[i].length; j++) {
+                char blockType;
+                switch (signC[i][j]) {
+                    case '0':
+                        terminal.setBackgroundColor(WHITE);
+                        blockType = ' ';
+                        break;
+                    case '1':
+                        terminal.setForegroundColor(BLUE);
+                        blockType = '\u2588';
+                        break;
+                    case '2':
+                        terminal.setForegroundColor(RED);
+                        blockType = '\u2588';
+                        break;
+                    default:
+                        terminal.setForegroundColor(BLACK);
+                        blockType = signC[i][j];
+                        break;
+                }
+                terminal.setCursorPosition(28 + i, 5 + j);
+                terminal.putCharacter(blockType);
+            }
+        }
+        terminal.resetColorAndSGR();
+        terminal.flush();
+//        if (endGame != 1) {
+        boolean hasPressedC = false;
+        KeyStroke keyStroke;
+        char c;
+        do {
+            do {
+                Thread.sleep(5);
+                keyStroke = terminal.pollInput();
+            } while (keyStroke == null);
+            switch (keyStroke.getKeyType()) {
+                case Character:
+                    if (keyStroke.getCharacter() == 'c') hasPressedC = true;
+                    break;
+                default:
+                    break;
+            }
+        } while (!hasPressedC);
+//        }
     }
 }
