@@ -57,6 +57,8 @@ public class TheGame {
                                 monsterList.add(new Monster());
                                 monsterList.get(monsterList.size() - 1).setMonsterX(lev.getStartCol() + 1 + ThreadLocalRandom.current().nextInt(lev.getCols() - lev.getStartCol() - 2));
                                 monsterList.get(monsterList.size() - 1).setMonsterY(lev.getStartRow() + 1 + ThreadLocalRandom.current().nextInt(lev.getRows() - lev.getStartRow() - 2));
+                                item.setItemX(lev.getStartCol() + 1 + ThreadLocalRandom.current().nextInt(lev.getCols() - lev.getStartCol() - 2));
+                                item.setItemY(lev.getStartRow() + 1 + ThreadLocalRandom.current().nextInt(lev.getRows() - lev.getStartRow() - 2));
                                 break;
                             } else {
                                 monsterHitItem = false;
@@ -67,7 +69,6 @@ public class TheGame {
                     }
                 } while (monsterHitItem);
 
-                for (Monster monster : monsterList) {
                     if (timer % 1000 == 0 && timer < 9000) {
                         prepareForWall(item, player, monsterList, lev.getStartCol(), lev.getStartRow(), lev.getCols(), lev.getRows(), terminal);
                         lev.setStartCol(lev.getStartCol() + 1);
@@ -76,7 +77,6 @@ public class TheGame {
                         lev.setCols(lev.getCols() - 1);
                         drawWall(lev, terminal);
                     }
-                }
             }
 
             while (keyStroke == null);
@@ -90,6 +90,7 @@ public class TheGame {
 
             oldPPosX = player.getPlayerX();
             oldPPosY = player.getPlayerY();
+
 
             switch (type) {
                 case ArrowUp:
@@ -110,6 +111,9 @@ public class TheGame {
                     break;
             }
             hitPlayer(player, monsterList);
+            terminal.setCursorPosition(item.getItemX(), item.getItemY());
+            terminal.setForegroundColor(RED);
+            terminal.putCharacter(item.getItemChar());
             terminal.setCursorPosition(oldPPosX, oldPPosY);
             terminal.setForegroundColor(BLACK);
             terminal.putCharacter(' ');
@@ -119,6 +123,10 @@ public class TheGame {
             terminal.flush();
 
             if (player.getPlayerX() == item.getItemX() && player.getPlayerY() == item.getItemY()) {
+                terminal.setForegroundColor(BLACK);
+                terminal.setCursorPosition(monsterList.get(monsterList.size()-1).getMonsterX(),monsterList.get(monsterList.size()-1).getMonsterY());
+                terminal.putCharacter(' ');
+                terminal.flush();
                 monsterList.remove(monsterList.size() - 1);
                 item.setItemX(lev.getStartCol() + 1 + ThreadLocalRandom.current().nextInt(lev.getCols() - lev.getStartCol() - 2));
                 item.setItemY(lev.getStartRow() + 1 + ThreadLocalRandom.current().nextInt(lev.getRows() - lev.getStartRow() - 2));
