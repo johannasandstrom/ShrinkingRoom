@@ -6,8 +6,6 @@ public class Player {
     private char playerChar = '\u263B';
     private int lives;
     private LocalTime hitTime;
-    private boolean isHit;
-
 
     public Player() {
         lives = 3;
