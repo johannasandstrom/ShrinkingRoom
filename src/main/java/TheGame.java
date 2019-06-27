@@ -56,12 +56,14 @@ public class TheGame {
         while (continueReadingInput) {
             statusBar(terminal, player, lev);
             do {
+                //låter processorn vila, kontroll av input endast var 5:e millisekund
                 Thread.sleep(5);
                 keyStroke = terminal.pollInput();
                 timer++;
                 statusBar(terminal, player, lev);
 
-                //move monster at interval
+                //flyttar monstren, hanterar om monster når item eller player via resp. metod
+                //set timer gör det möjligt att öka hastigheten hos monstren
                 boolean monsterHitItem = false;
                 do {
                     for (Monster monster : monsterList) {
@@ -98,6 +100,7 @@ public class TheGame {
                 }
             }
 
+            //bestämmer vad som händer baserat på vilken tangent användaren trycker på - styr med piltangenter, avslutar med esc
             while (keyStroke == null);
             type = keyStroke.getKeyType();
 
@@ -109,7 +112,6 @@ public class TheGame {
 
             oldPPosX = player.getPlayerX();
             oldPPosY = player.getPlayerY();
-
 
             switch (type) {
                 case ArrowUp:
@@ -129,10 +131,14 @@ public class TheGame {
                         player.setPlayerX(oldPPosX - 1);
                     break;
             }
+
+            //kollar om spelaren träffats av monstret, och om det i så fall är game over
             hitPlayer(player, monsterList);
             if (player.getLives() == 0) {
                 gameOver(player, terminal, lev, item, bm, signs, monsterList);
             }
+
+            //ritar ut item och player - suddar gammalt
             terminal.setCursorPosition(item.getItemX(), item.getItemY());
             terminal.setForegroundColor(RED);
             terminal.putCharacter(item.getItemChar());
@@ -144,6 +150,7 @@ public class TheGame {
             terminal.putCharacter(player.getPlayerChar());
             terminal.flush();
 
+            //kollar om spelaren nått item - minskar i så fall antalet monster med 1
             if (player.getPlayerX() == item.getItemX() && player.getPlayerY() == item.getItemY()) {
                 terminal.setForegroundColor(BLACK);
                 terminal.setCursorPosition(monsterList.get(monsterList.size() - 1).getMonsterX(), monsterList.get(monsterList.size() - 1).getMonsterY());
@@ -154,6 +161,7 @@ public class TheGame {
                 item.setItemY(lev.getStartRow() + 1 + ThreadLocalRandom.current().nextInt(lev.getRows() - lev.getStartRow() - 2));
             }
 
+            //om antalet monster kvar är 0 går man vidare till nästa level
             if (monsterList.size() < 1) {
                 displayMessage(signs[0].getSignDesign(), terminal, 0);
                 newLevel(monsterList, terminal, player, item, lev);
@@ -164,6 +172,7 @@ public class TheGame {
 
     }
 
+    //metod som ritar upp väggen allt eftersom den krymper
     private static void drawWall(Level lev,/*int startCol, int startRow, int cols, int rows, */Terminal terminal) throws Exception {
         int startCol = lev.getStartCol();
         int startRow = lev.getStartRow();
@@ -189,6 +198,7 @@ public class TheGame {
         terminal.flush();
     }
 
+    //kollar om en viss position är upptagen av väggen
     private static boolean isWall(int x, int y, int wallX, int wallY) {
         if (x == wallX || y == wallY) {
             return true;
@@ -197,6 +207,7 @@ public class TheGame {
         }
     }
 
+    //hanterar monsternas rörelser - ska de röra sig mot item eller spelare? + ritar upp monstrets nya pos, tar bort den gamla
     private static void monsterMovement(Player player, Monster monster, Item item, Terminal terminal) throws Exception {
         int pX = player.getPlayerX(), pY = player.getPlayerY();
         int mX = monster.getMonsterX(), mY = monster.getMonsterY();
@@ -233,6 +244,7 @@ public class TheGame {
         terminal.flush();
     }
 
+    //flyttar på spelare, monster och item om de är i vägen när väggen ska växa
     private static void prepareForWall(Item item, Player player, List<Monster> mList, int startCol, int startRow, int cols, int rows, Terminal terminal) throws Exception {
         int oldPX = player.getPlayerX(), oldPY = player.getPlayerY();
         int oldIX = item.getItemX(), oldIY = item.getItemY();
@@ -272,6 +284,7 @@ public class TheGame {
         terminal.flush();
     }
 
+    //kollar om spelaren är på samma plats som monstret - minskar i så fall liv med 1
     private static void hitPlayer(Player p, List<Monster> mList) {
         for (Monster m : mList) {
             if (p.getPlayerX() == m.getMonsterX() && p.getPlayerY() == m.getMonsterY()) {
@@ -285,6 +298,7 @@ public class TheGame {
         }
     }
 
+    //hanterar allt som händer vid game over
     private static void gameOver(Player p, Terminal terminal, Level lev, Item item, Thread bm, Sign[] signs, List<Monster> monsterList) throws Exception {
         displayMessage(signs[1].getSignDesign(), terminal, 1);
         boolean hasResponded = false;
@@ -316,6 +330,7 @@ public class TheGame {
         }
     }
 
+    //kollar om monstret nått item
     private static boolean hitItem(Item i, Monster monster) {
         if (i.getItemX() == monster.getMonsterX() && i.getItemY() == monster.getMonsterY()) {
             return true;
@@ -323,6 +338,7 @@ public class TheGame {
         return false;
     }
 
+    //hanterar allt som händer då ny level startas upp
     private static void newLevel(List<Monster> monsterList, Terminal terminal, Player player, Item item, Level lev) throws Exception {
         lev.level++;
         terminal.clearScreen();
@@ -364,6 +380,7 @@ public class TheGame {
         System.out.println(monsterList.size());
     }
 
+    //kollar om item eller player är närmast ett monster
     private static boolean isMonsterCloserToPlayer(Monster monster, Player player, Item item) {
         int xDistToPlayer = Math.abs(monster.getMonsterX() - player.getPlayerX());
         int yDistToPlayer = Math.abs(monster.getMonsterY() - player.getPlayerY());
@@ -378,6 +395,7 @@ public class TheGame {
         return false;
     }
 
+    //hanterar vad som ska skrivas på status bar
     private static void statusBar(Terminal terminal, Player player, Level lev) throws Exception {
         terminal.setForegroundColor(WHITE);
         terminal.setBackgroundColor(BLUE);
@@ -390,6 +408,7 @@ public class TheGame {
         terminal.flush();
     }
 
+    //hanterar vilket meddelande som skrivs ut på skärmen (ny level? game over?)
     private static void displayMessage(char[][] signC, Terminal terminal, int endGame) throws Exception {
         for (int i = 0; i < signC.length; i++) {
             for (int j = 0; j < signC[i].length; j++) {
