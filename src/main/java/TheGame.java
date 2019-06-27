@@ -1,4 +1,3 @@
-import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
@@ -14,7 +13,7 @@ import java.time.Duration;
 import java.time.LocalTime;
 
 public class TheGame {
-    static boolean continueReadingInput = true;
+    private static boolean continueReadingInput = true;
 
     public static void main(String[] args) throws Exception {
         DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();
@@ -23,7 +22,7 @@ public class TheGame {
 
         int oldPPosX, oldPPosY, timer = 0;
 
-        List<Monster> monsterList = new ArrayList<Monster>();
+        List<Monster> monsterList = new ArrayList<>();
         Player player = new Player();
 
         Item item = new Item();
@@ -42,7 +41,7 @@ public class TheGame {
 
         statusBar(terminal, player, lev);
 
-        KeyStroke keyStroke = null;
+        KeyStroke keyStroke;
         KeyType type;
         continueReadingInput = true;
 
@@ -157,7 +156,7 @@ public class TheGame {
 
     }
 
-    public static void drawWall(Level lev,/*int startCol, int startRow, int cols, int rows, */Terminal terminal) throws Exception {
+    private static void drawWall(Level lev,/*int startCol, int startRow, int cols, int rows, */Terminal terminal) throws Exception {
         int startCol = lev.getStartCol();
         int startRow = lev.getStartRow();
         int cols = lev.getCols();
@@ -182,18 +181,15 @@ public class TheGame {
         terminal.flush();
     }
 
-    public static boolean isWall(int x, int y, int wallX, int wallY) {
-        boolean isWall = false;
+    private static boolean isWall(int x, int y, int wallX, int wallY) {
         if (x == wallX || y == wallY) {
-            isWall = true;
+            return true;
         } else {
-            isWall = false;
-            //}
+            return false;
         }
-        return isWall;
     }
 
-    public static void monsterMovement(Player player, Monster monster, Item item, Terminal terminal) throws Exception {
+    private static void monsterMovement(Player player, Monster monster, Item item, Terminal terminal) throws Exception {
         int pX = player.getPlayerX(), pY = player.getPlayerY();
         int mX = monster.getMonsterX(), mY = monster.getMonsterY();
         int iX = item.getItemX(), iY = item.getItemY();
@@ -229,7 +225,7 @@ public class TheGame {
         terminal.flush();
     }
 
-    public static void prepareForWall(Item item, Player player, List<Monster> mList, int startCol, int startRow, int cols, int rows, Terminal terminal) throws Exception {
+    private static void prepareForWall(Item item, Player player, List<Monster> mList, int startCol, int startRow, int cols, int rows, Terminal terminal) throws Exception {
         int oldPX = player.getPlayerX(), oldPY = player.getPlayerY();
         int oldIX = item.getItemX(), oldIY = item.getItemY();
         //************move player when room shrinks******************
@@ -268,7 +264,7 @@ public class TheGame {
         terminal.flush();
     }
 
-    public static void hitPlayer(Player p, List<Monster> mList) {
+    private static void hitPlayer(Player p, List<Monster> mList) {
         for (Monster m : mList) {
             if (p.getPlayerX() == m.getMonsterX() && p.getPlayerY() == m.getMonsterY()) {
                 long iTime = Duration.between(p.getHitTime(), LocalTime.now()).getSeconds();
@@ -281,7 +277,7 @@ public class TheGame {
         }
     }
 
-    public static void gameOver(Player p, Terminal terminal, Level lev, Item item, Thread bm, Sign[] signs, List<Monster> monsterList) throws Exception {
+    private static void gameOver(Player p, Terminal terminal, Level lev, Item item, Thread bm, Sign[] signs, List<Monster> monsterList) throws Exception {
         displayMessage(signs[1].getSignDesign(), terminal, 1);
         boolean hasResponded = false;
         KeyStroke keyStroke;
@@ -312,14 +308,14 @@ public class TheGame {
         }
     }
 
-    public static boolean hitItem(Item i, Monster monster) {
+    private static boolean hitItem(Item i, Monster monster) {
         if (i.getItemX() == monster.getMonsterX() && i.getItemY() == monster.getMonsterY()) {
             return true;
         }
         return false;
     }
 
-    public static void newLevel(List<Monster> monsterList, Terminal terminal, Player player, Item item, Level lev) throws Exception {
+    private static void newLevel(List<Monster> monsterList, Terminal terminal, Player player, Item item, Level lev) throws Exception {
         lev.level++;
         terminal.clearScreen();
         lev.setCols(terminal.getTerminalSize().getColumns());
@@ -360,7 +356,7 @@ public class TheGame {
         System.out.println(monsterList.size());
     }
 
-    public static boolean isMonsterCloserToPlayer(Monster monster, Player player, Item item) {
+    private static boolean isMonsterCloserToPlayer(Monster monster, Player player, Item item) {
         int xDistToPlayer = Math.abs(monster.getMonsterX() - player.getPlayerX());
         int yDistToPlayer = Math.abs(monster.getMonsterY() - player.getPlayerY());
         int xDistToItem = Math.abs(monster.getMonsterX() - item.getItemX());
@@ -374,7 +370,7 @@ public class TheGame {
         return false;
     }
 
-    public static void statusBar(Terminal terminal, Player player, Level lev) throws Exception {
+    private static void statusBar(Terminal terminal, Player player, Level lev) throws Exception {
         terminal.setForegroundColor(WHITE);
         terminal.setBackgroundColor(BLUE);
         String statusBar = "SHRINKING ROOM - LEVEL:" + lev.level + " - LIVES LEFT:" + player.getLives();
@@ -386,7 +382,7 @@ public class TheGame {
         terminal.flush();
     }
 
-    public static void displayMessage(char[][] signC, Terminal terminal, int endGame) throws Exception {
+    private static void displayMessage(char[][] signC, Terminal terminal, int endGame) throws Exception {
         for (int i = 0; i < signC.length; i++) {
             for (int j = 0; j < signC[i].length; j++) {
                 char blockType;
