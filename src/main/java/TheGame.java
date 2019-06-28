@@ -13,6 +13,7 @@ import java.time.Duration;
 import java.time.LocalTime;
 
 public class TheGame {
+
     private static boolean continueReadingInput = true;
 
     public static void main(String[] args) throws Exception {
@@ -79,7 +80,7 @@ public class TheGame {
                             monsterMovement(player, monster, item, terminal);
                             if (!hitPlayer(player, monsterList, lifeLost))
                                 gameOver(gameOver, player, terminal, lev, item, bm, signs, monsterList, clearLevel);
-                            if (hitItem(item, monster)) {
+                            if (hitItemE(item, monster)) {
                                 Thread sfx = new Thread(eHeart);
                                 sfx.start();
                                 item.setItemX(1000);
@@ -107,7 +108,20 @@ public class TheGame {
                     lev.setStartRow(lev.getStartRow() + 1);
                     lev.setRows(lev.getRows() - 1);
                     lev.setCols(lev.getCols() - 1);
+
                     drawWall(lev, terminal);
+
+                    //kollar om spelaren nått item - minskar i så fall antalet monster med 1
+                    if (hitItemP(item, player)) {
+                        pHitHeart(pHeart, terminal, monsterList, item, lev);
+                    }
+                    //om antalet monster kvar är 0 går man vidare till nästa level
+                    if (monsterList.size() < 1) {
+                        displayMessage(signs[0].getSignDesign(), terminal, 0);
+                        newLevel(monsterList, terminal, player, item, lev, clearLevel);
+                        timer = 0;
+                    }
+
                 }
             }
 
@@ -150,12 +164,12 @@ public class TheGame {
             }
 
             //ritar ut item och player - suddar gammalt
-            terminal.setCursorPosition(item.getItemX(), item.getItemY());
-            terminal.setForegroundColor(RED);
-            terminal.putCharacter(item.getItemChar());
             terminal.setCursorPosition(oldPPosX, oldPPosY);
             terminal.setForegroundColor(BLACK);
             terminal.putCharacter(' ');
+            terminal.setCursorPosition(item.getItemX(), item.getItemY());
+            terminal.setForegroundColor(RED);
+            terminal.putCharacter(item.getItemChar());
             terminal.setCursorPosition(player.getPlayerX(), player.getPlayerY());
             if (Duration.between(player.getHitTime(), LocalTime.now()).getSeconds() < 5) {
                 terminal.setForegroundColor(WHITE);
@@ -166,16 +180,17 @@ public class TheGame {
             terminal.flush();
 
             //kollar om spelaren nått item - minskar i så fall antalet monster med 1
-            if (player.getPlayerX() == item.getItemX() && player.getPlayerY() == item.getItemY()) {
-                Thread sfx = new Thread(pHeart);
-                sfx.start();
-                terminal.setForegroundColor(BLACK);
-                terminal.setCursorPosition(monsterList.get(monsterList.size() - 1).getMonsterX(), monsterList.get(monsterList.size() - 1).getMonsterY());
-                terminal.putCharacter(' ');
-                terminal.flush();
-                monsterList.remove(monsterList.size() - 1);
-                item.setItemX(lev.getStartCol() + 1 + ThreadLocalRandom.current().nextInt(lev.getCols() - lev.getStartCol() - 2));
-                item.setItemY(lev.getStartRow() + 1 + ThreadLocalRandom.current().nextInt(lev.getRows() - lev.getStartRow() - 2));
+            if (hitItemP(item, player)) {
+                pHitHeart(pHeart, terminal, monsterList, item, lev);
+//                Thread sfx = new Thread(pHeart);
+//                sfx.start();
+//                terminal.setForegroundColor(BLACK);
+//                terminal.setCursorPosition(monsterList.get(monsterList.size() - 1).getMonsterX(), monsterList.get(monsterList.size() - 1).getMonsterY());
+//                terminal.putCharacter(' ');
+//                terminal.flush();
+//                monsterList.remove(monsterList.size() - 1);
+//                item.setItemX(lev.getStartCol() + 1 + ThreadLocalRandom.current().nextInt(lev.getCols() - lev.getStartCol() - 2));
+//                item.setItemY(lev.getStartRow() + 1 + ThreadLocalRandom.current().nextInt(lev.getRows() - lev.getStartRow() - 2));
             }
 
             //om antalet monster kvar är 0 går man vidare till nästa level
@@ -265,6 +280,16 @@ public class TheGame {
     private static void prepareForWall(Item item, Player player, List<Monster> mList, int startCol, int startRow, int cols, int rows, Terminal terminal) throws Exception {
         int oldPX = player.getPlayerX(), oldPY = player.getPlayerY();
         int oldIX = item.getItemX(), oldIY = item.getItemY();
+        //************move item when room shrinks****************
+        if (item.getItemX() == startCol + 1) item.setItemX(item.getItemX() + 1);
+        if (item.getItemX() == cols - 2) item.setItemX(item.getItemX() - 1);
+        if (item.getItemY() == startRow + 1) item.setItemY(item.getItemY() + 1);
+        if (item.getItemY() == rows - 2) item.setItemY(item.getItemY() - 1);
+        terminal.setCursorPosition(oldIX, oldIY);
+        terminal.putCharacter(' ');
+        terminal.setCursorPosition(item.getItemX(), item.getItemY());
+        terminal.setForegroundColor(RED);
+        terminal.putCharacter(item.getItemChar());
         //************move player when room shrinks******************
         if (player.getPlayerX() == startCol + 1) player.setPlayerX(player.getPlayerX() + 1);
         if (player.getPlayerX() == cols - 2) player.setPlayerX(player.getPlayerX() - 1);
@@ -292,16 +317,6 @@ public class TheGame {
             terminal.setForegroundColor(GREEN);
             terminal.putCharacter(monster.getMonsterChar());
         }
-        //************move item when room shrinks****************
-        if (item.getItemX() == startCol + 1) item.setItemX(item.getItemX() + 1);
-        if (item.getItemX() == cols - 2) item.setItemX(item.getItemX() - 1);
-        if (item.getItemY() == startRow + 1) item.setItemY(item.getItemY() + 1);
-        if (item.getItemY() == rows - 2) item.setItemY(item.getItemY() - 1);
-        terminal.setCursorPosition(oldIX, oldIY);
-        terminal.putCharacter(' ');
-        terminal.setCursorPosition(item.getItemX(), item.getItemY());
-        terminal.setForegroundColor(RED);
-        terminal.putCharacter(item.getItemChar());
         terminal.flush();
     }
 
@@ -323,6 +338,7 @@ public class TheGame {
         return true;
     }
 
+    //när man dör
     private static void gameOver(Sfx gameOver, Player p, Terminal terminal, Level lev, Item item, Thread bm, Sign[] signs, List<Monster> monsterList, Sfx clearLevel) throws Exception {
         displayMessage(signs[1].getSignDesign(), terminal, 1);
         statusBar(terminal, p, lev);
@@ -358,13 +374,36 @@ public class TheGame {
     }
 
     //kollar om monstret nått item
-    private static boolean hitItem(Item i, Monster monster) {
+    private static boolean hitItemE(Item i, Monster monster) {
         if (i.getItemX() == monster.getMonsterX() && i.getItemY() == monster.getMonsterY()) {
             return true;
         }
         return false;
     }
 
+    //kollar om spelaren nått item
+
+    private static boolean hitItemP(Item i, Player player) {
+        if (i.getItemX() == player.getPlayerX() && i.getItemY() == player.getPlayerY()) {
+            return true;
+        }
+        return false;
+    }
+
+    //hanterar när spelaren når hjärtat
+    private static void pHitHeart(Sfx pHeart, Terminal terminal, List<Monster> monsterList, Item item, Level lev) throws Exception {
+        Thread sfx = new Thread(pHeart);
+        sfx.start();
+        terminal.setForegroundColor(BLACK);
+        terminal.setCursorPosition(monsterList.get(monsterList.size() - 1).getMonsterX(), monsterList.get(monsterList.size() - 1).getMonsterY());
+        terminal.putCharacter(' ');
+        terminal.flush();
+        monsterList.remove(monsterList.size() - 1);
+        item.setItemX(lev.getStartCol() + 1 + ThreadLocalRandom.current().nextInt(lev.getCols() - lev.getStartCol() - 2));
+        item.setItemY(lev.getStartRow() + 1 + ThreadLocalRandom.current().nextInt(lev.getRows() - lev.getStartRow() - 2));
+    }
+
+    //initierar ny nivå
     private static void newLevel(List<Monster> monsterList, Terminal terminal, Player player, Item item, Level lev, Sfx clearLevel) throws Exception {
         lev.level++;
         terminal.clearScreen();
@@ -388,6 +427,10 @@ public class TheGame {
         item.setItemX(lev.getStartCol() + 1 + ThreadLocalRandom.current().nextInt(lev.getCols() - lev.getStartCol() - 2));
         item.setItemY(lev.getStartRow() + 1 + ThreadLocalRandom.current().nextInt(lev.getRows() - lev.getStartRow() - 2));
 
+        terminal.setCursorPosition(item.getItemX(), item.getItemY());
+        terminal.setForegroundColor(RED);
+        terminal.putCharacter(item.getItemChar());
+
         terminal.setCursorPosition(player.getPlayerX(), player.getPlayerY());
         if (lev.level == 1) terminal.setForegroundColor(WHITE);
         else terminal.setForegroundColor(CYAN);
@@ -398,10 +441,6 @@ public class TheGame {
             terminal.setForegroundColor(GREEN);
             terminal.putCharacter(monster.getMonsterChar());
         }
-
-        terminal.setCursorPosition(item.getItemX(), item.getItemY());
-        terminal.setForegroundColor(RED);
-        terminal.putCharacter(item.getItemChar());
 
         terminal.flush();
         Thread sfxClear = new Thread(clearLevel);
