@@ -182,15 +182,6 @@ public class TheGame {
             //kollar om spelaren nått item - minskar i så fall antalet monster med 1
             if (hitItemP(item, player)) {
                 pHitHeart(pHeart, terminal, monsterList, item, lev);
-//                Thread sfx = new Thread(pHeart);
-//                sfx.start();
-//                terminal.setForegroundColor(BLACK);
-//                terminal.setCursorPosition(monsterList.get(monsterList.size() - 1).getMonsterX(), monsterList.get(monsterList.size() - 1).getMonsterY());
-//                terminal.putCharacter(' ');
-//                terminal.flush();
-//                monsterList.remove(monsterList.size() - 1);
-//                item.setItemX(lev.getStartCol() + 1 + ThreadLocalRandom.current().nextInt(lev.getCols() - lev.getStartCol() - 2));
-//                item.setItemY(lev.getStartRow() + 1 + ThreadLocalRandom.current().nextInt(lev.getRows() - lev.getStartRow() - 2));
             }
 
             //om antalet monster kvar är 0 går man vidare till nästa level
@@ -198,11 +189,11 @@ public class TheGame {
                 displayMessage(signs[0].getSignDesign(), terminal, 0);
                 newLevel(monsterList, terminal, player, item, lev, clearLevel);
                 timer = 0;
-            }
+            } //end if
 
-        }
+        } //end while reading Input
 
-    }
+    } //end main
 
     //metod som ritar upp väggen allt eftersom den krymper
     private static void drawWall(Level lev,/*int startCol, int startRow, int cols, int rows, */Terminal terminal) throws Exception {
@@ -232,11 +223,7 @@ public class TheGame {
 
     //kollar om en viss position är upptagen av väggen
     private static boolean isWall(int x, int y, int wallX, int wallY) {
-        if (x == wallX || y == wallY) {
-            return true;
-        } else {
-            return false;
-        }
+        return (x == wallX || y == wallY);
     }
 
     //hanterar monsternas rörelser - ska de röra sig mot item eller spelare? + ritar upp monstrets nya pos, tar bort den gamla
@@ -375,19 +362,12 @@ public class TheGame {
 
     //kollar om monstret nått item
     private static boolean hitItemE(Item i, Monster monster) {
-        if (i.getItemX() == monster.getMonsterX() && i.getItemY() == monster.getMonsterY()) {
-            return true;
-        }
-        return false;
+        return (i.getItemX() == monster.getMonsterX() && i.getItemY() == monster.getMonsterY());
     }
 
     //kollar om spelaren nått item
-
     private static boolean hitItemP(Item i, Player player) {
-        if (i.getItemX() == player.getPlayerX() && i.getItemY() == player.getPlayerY()) {
-            return true;
-        }
-        return false;
+        return (i.getItemX() == player.getPlayerX() && i.getItemY() == player.getPlayerY());
     }
 
     //hanterar när spelaren når hjärtat
@@ -411,7 +391,7 @@ public class TheGame {
         lev.setRows(terminal.getTerminalSize().getRows());
         lev.setStartCol(0);
         lev.setStartRow(0);
-        drawWall(lev,/*lev.getStartCol(), lev.getStartRow(), lev.getCols(), lev.getRows(),*/ terminal);
+        drawWall(lev, terminal);
         for (int i = 0; i < lev.level; i++) {
             monsterList.add(new Monster());
         }
@@ -456,10 +436,7 @@ public class TheGame {
         double distToPlayer = Math.sqrt(xDistToPlayer * xDistToPlayer + yDistToPlayer * yDistToPlayer);
         double distToItem = Math.sqrt(xDistToItem * xDistToItem + yDistToItem * yDistToItem);
 
-        if (distToPlayer < distToItem) {
-            return true;
-        }
-        return false;
+        return (distToPlayer < distToItem);
     }
 
     //hanterar vad som ska skrivas på status bar
@@ -507,7 +484,6 @@ public class TheGame {
         if (endGame != 1) {
             boolean hasPressedC = false;
             KeyStroke keyStroke;
-            char c;
             do {
                 do {
                     Thread.sleep(5);
