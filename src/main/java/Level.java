@@ -1,6 +1,6 @@
 public class Level {
     private int rows, cols, startRow, startCol;
-    public int level = 3;
+    public int level = 0;
 
     public int getRows() {
         return rows;

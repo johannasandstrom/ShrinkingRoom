@@ -8,7 +8,7 @@ public class Player {
     private LocalTime hitTime;
 
     public Player() {
-        lives = 1;
+        lives = 3;
         hitTime = LocalTime.now();
     }
 
