@@ -2,11 +2,11 @@ import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
 
-public class Music implements Runnable {
+public class Sfx implements Runnable {
 
     private String fileLocation;
 
-    public Music(String fileLocation) {
+    public Sfx(String fileLocation) {
         this.fileLocation = fileLocation;
     }
 
@@ -17,9 +17,7 @@ public class Music implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
-            playSound(fileLocation);
-        }
+        playSound(fileLocation);
     }
 
     private void playSound(String fileName) {

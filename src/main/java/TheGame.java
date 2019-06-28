@@ -36,15 +36,19 @@ public class TheGame {
         signs[0] = levelClearSign;
         signs[1] = gameOverSign;
 
-        //level-klassen hanterar den aktuella storleken på spelplanen
-        Level lev = new Level();
-        newLevel(monsterList, terminal, player, item, lev);
 
-        //Thread hanterar bakgrundsmusiken
+Sfx clearLevel = new Sfx("clearLevel.wav");
+        Sfx pHeart = new Sfx("pHeart.wav");
+        Sfx eHeart = new Sfx("eHeart.wav");
+        Sfx lifeLost = new Sfx("lifeLost.wav");
+        Sfx gameOver = new Sfx("gameOver.wav");
+//Thread hanterar bakgrundsmusiken
         Thread bm = new Thread(new Music());
         bm.start();
 
-        //statusBar ritar upp level och antal liv
+        Level lev = new Level();
+        newLevel(monsterList, terminal, player, item, lev, clearLevel);
+
         statusBar(terminal, player, lev);
 
         //objekt som hanterar user input
@@ -69,8 +73,10 @@ public class TheGame {
                     for (Monster monster : monsterList) {
                         if (monster.getTimer() % monster.getSpeedTimer() == 0) {
                             monsterMovement(player, monster, item, terminal);
-                            hitPlayer(player, monsterList);
+                            hitPlayer(player, monsterList, lifeLost);
                             if (hitItem(item, monster)) {
+                                Thread sfx = new Thread(eHeart);
+                                sfx.start();
                                 item.setItemX(1000);
                                 item.setItemY(1000);
                                 monsterHitItem = true;
@@ -135,7 +141,7 @@ public class TheGame {
             //kollar om spelaren träffats av monstret, och om det i så fall är game over
             hitPlayer(player, monsterList);
             if (player.getLives() == 0) {
-                gameOver(player, terminal, lev, item, bm, signs, monsterList);
+                gameOver(gameOver, player, terminal, lev, item, bm, signs, monsterList, clearLevel);
             }
 
             //ritar ut item och player - suddar gammalt
@@ -156,6 +162,8 @@ public class TheGame {
 
             //kollar om spelaren nått item - minskar i så fall antalet monster med 1
             if (player.getPlayerX() == item.getItemX() && player.getPlayerY() == item.getItemY()) {
+                Thread sfx = new Thread(pHeart);
+                sfx.start();
                 terminal.setForegroundColor(BLACK);
                 terminal.setCursorPosition(monsterList.get(monsterList.size() - 1).getMonsterX(), monsterList.get(monsterList.size() - 1).getMonsterY());
                 terminal.putCharacter(' ');
@@ -168,7 +176,7 @@ public class TheGame {
             //om antalet monster kvar är 0 går man vidare till nästa level
             if (monsterList.size() < 1) {
                 displayMessage(signs[0].getSignDesign(), terminal, 0);
-                newLevel(monsterList, terminal, player, item, lev);
+                newLevel(monsterList, terminal, player, item, lev, clearLevel);
                 timer = 0;
             }
 
@@ -298,6 +306,8 @@ public class TheGame {
             if (p.getPlayerX() == m.getMonsterX() && p.getPlayerY() == m.getMonsterY()) {
                 long iTime = Duration.between(p.getHitTime(), LocalTime.now()).getSeconds();
                 if (iTime > 5) {
+                    Thread sfx = new Thread(lifeLost);
+                    sfx.start();
                     p.setLives(p.getLives() - 1);
                     p.setHitTime(LocalTime.now());
                 }
@@ -305,9 +315,10 @@ public class TheGame {
         }
     }
 
-    //hanterar allt som händer vid game over
-    private static void gameOver(Player p, Terminal terminal, Level lev, Item item, Thread bm, Sign[] signs, List<Monster> monsterList) throws Exception {
+    private static void gameOver(Sfx gameOver, Player p, Terminal terminal, Level lev, Item item, Thread bm, Sign[] signs, List<Monster> monsterList, Sfx clearLevel) throws Exception {
         displayMessage(signs[1].getSignDesign(), terminal, 1);
+        Thread sfx = new Thread(gameOver);
+        sfx.start();
         boolean hasResponded = false;
         KeyStroke keyStroke;
         char c;
@@ -329,7 +340,7 @@ public class TheGame {
             monsterList.clear();
             p.setLives(3);
             lev.level = 0;
-            newLevel(monsterList, terminal, p, item, lev);
+            newLevel(monsterList, terminal, p, item, lev, clearLevel);
         } else {
             continueReadingInput = false;
             terminal.close();
@@ -345,8 +356,7 @@ public class TheGame {
         return false;
     }
 
-    //hanterar allt som händer då ny level startas upp
-    private static void newLevel(List<Monster> monsterList, Terminal terminal, Player player, Item item, Level lev) throws Exception {
+    private static void newLevel(List<Monster> monsterList, Terminal terminal, Player player, Item item, Level lev, Sfx clearLevel) throws Exception {
         lev.level++;
         terminal.clearScreen();
         lev.setCols(terminal.getTerminalSize().getColumns());
@@ -384,7 +394,8 @@ public class TheGame {
         terminal.putCharacter(item.getItemChar());
 
         terminal.flush();
-        System.out.println(monsterList.size());
+        Thread sfxClear = new Thread(clearLevel);
+        sfxClear.start();
     }
 
     //kollar om item eller player är närmast ett monster
