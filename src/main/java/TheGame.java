@@ -79,7 +79,7 @@ public class TheGame {
                     for (Monster monster : monsterList) {
                         if (monster.getTimer() % monster.getSpeedTimer() == 0) {
                             monsterMovement(player, monster, item, terminal);
-                            if (!hitPlayer(player, monsterList, lifeLost)) checkDeath=1;
+                            if (!hitPlayer(player, monsterList, lifeLost)) checkDeath = 1;
                             if (hitItemE(item, monster)) {
                                 Thread sfx = new Thread(eHeart);
                                 sfx.start();
@@ -99,7 +99,8 @@ public class TheGame {
                         }
                         monster.setTimer(monster.getTimer() + 1);
                     }
-                    if (checkDeath==1)gameOver(gameOver, player, terminal, lev, item, bm, signs, monsterList, clearLevel);
+                    if (checkDeath == 1)
+                        gameOver(gameOver, player, terminal, lev, item, bm, signs, monsterList, clearLevel);
                 } while (monsterHitItem);
 
                 //stoppar muren från att växa efter x antal omgångar
@@ -197,7 +198,7 @@ public class TheGame {
     } //end main
 
     //metod som ritar upp väggen allt eftersom den krymper
-    private static void drawWall(Level lev,/*int startCol, int startRow, int cols, int rows, */Terminal terminal) throws Exception {
+    private static void drawWall(Level lev, Terminal terminal) throws Exception {
         int startCol = lev.getStartCol();
         int startRow = lev.getStartRow();
         int cols = lev.getCols();

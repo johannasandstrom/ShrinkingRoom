@@ -10,10 +10,10 @@ public class Music implements Runnable {
         this.fileLocation = fileLocation;
     }
 
-    public void play() {
-        Thread thread = new Thread(this);
-        thread.start();
-    }
+//    public void play() {
+//        Thread thread = new Thread(this);
+//        thread.start();
+//    }
 
     @Override
     public void run() {
