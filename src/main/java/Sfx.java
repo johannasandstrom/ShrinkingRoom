@@ -4,10 +4,10 @@ import java.io.IOException;
 
 public class Sfx implements Runnable {
 
-    private String fileLocation = "clearLevel.wav";
+    private String fileLocation;
 
     public Sfx(String fileLocation) {
-        this.fileLocation=fileLocation;
+        this.fileLocation = fileLocation;
     }
 
     public void play() {
@@ -17,7 +17,7 @@ public class Sfx implements Runnable {
 
     @Override
     public void run() {
-            playSound(fileLocation);
+        playSound(fileLocation);
     }
 
     private void playSound(String fileName) {

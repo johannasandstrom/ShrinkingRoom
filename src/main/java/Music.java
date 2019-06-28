@@ -4,9 +4,10 @@ import java.io.IOException;
 
 public class Music implements Runnable {
 
-    private String fileLocation = "backgroundmusic.wav";
+    private String fileLocation;
 
-    public Music() {
+    public Music(String fileLocation) {
+        this.fileLocation = fileLocation;
     }
 
     public void play() {
@@ -16,9 +17,9 @@ public class Music implements Runnable {
 
     @Override
     public void run() {
-//        while (true) {
-//            playSound(fileLocation);
-//        }
+        while (true) {
+            playSound(fileLocation);
+        }
     }
 
     private void playSound(String fileName) {

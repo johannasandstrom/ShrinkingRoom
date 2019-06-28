@@ -9,7 +9,7 @@ public class Player {
 
 
     public Player() {
-        lives = 3;
+        lives = 1;
         hitTime = LocalTime.now();
     }
 
