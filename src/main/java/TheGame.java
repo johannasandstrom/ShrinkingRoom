@@ -37,13 +37,15 @@ public class TheGame {
         signs[1] = gameOverSign;
 
 
-Sfx clearLevel = new Sfx("clearLevel.wav");
+        Sfx clearLevel = new Sfx("clearLevel.wav");
         Sfx pHeart = new Sfx("pHeart.wav");
         Sfx eHeart = new Sfx("eHeart.wav");
         Sfx lifeLost = new Sfx("lifeLost.wav");
         Sfx gameOver = new Sfx("gameOver.wav");
-//Thread hanterar bakgrundsmusiken
-        Thread bm = new Thread(new Music());
+
+        //Thread hanterar bakgrundsmusiken
+        Music backgroundmusic = new Music("backgroundmusic.wav");
+        Thread bm = new Thread(backgroundmusic);
         bm.start();
 
         Level lev = new Level();
@@ -139,7 +141,7 @@ Sfx clearLevel = new Sfx("clearLevel.wav");
             }
 
             //kollar om spelaren träffats av monstret, och om det i så fall är game over
-            hitPlayer(player, monsterList);
+            hitPlayer(player, monsterList, lifeLost);
             if (player.getLives() == 0) {
                 gameOver(gameOver, player, terminal, lev, item, bm, signs, monsterList, clearLevel);
             }
@@ -152,7 +154,7 @@ Sfx clearLevel = new Sfx("clearLevel.wav");
             terminal.setForegroundColor(BLACK);
             terminal.putCharacter(' ');
             terminal.setCursorPosition(player.getPlayerX(), player.getPlayerY());
-            if(Duration.between(player.getHitTime(), LocalTime.now()).getSeconds() < 5) {
+            if (Duration.between(player.getHitTime(), LocalTime.now()).getSeconds() < 5) {
                 terminal.setForegroundColor(WHITE);
             } else {
                 terminal.setForegroundColor(CYAN);
@@ -268,7 +270,7 @@ Sfx clearLevel = new Sfx("clearLevel.wav");
         terminal.setCursorPosition(oldPX, oldPY);
         terminal.putCharacter(' ');
         terminal.setCursorPosition(player.getPlayerX(), player.getPlayerY());
-        if(Duration.between(player.getHitTime(), LocalTime.now()).getSeconds() < 5) {
+        if (Duration.between(player.getHitTime(), LocalTime.now()).getSeconds() < 5) {
             terminal.setForegroundColor(WHITE);
         } else {
             terminal.setForegroundColor(CYAN);
@@ -301,15 +303,17 @@ Sfx clearLevel = new Sfx("clearLevel.wav");
     }
 
     //kollar om spelaren är på samma plats som monstret - minskar i så fall liv med 1
-    private static void hitPlayer(Player p, List<Monster> mList) {
+    private static void hitPlayer(Player p, List<Monster> mList, Sfx lifeLost) {
         for (Monster m : mList) {
             if (p.getPlayerX() == m.getMonsterX() && p.getPlayerY() == m.getMonsterY()) {
                 long iTime = Duration.between(p.getHitTime(), LocalTime.now()).getSeconds();
                 if (iTime > 5) {
-                    Thread sfx = new Thread(lifeLost);
-                    sfx.start();
                     p.setLives(p.getLives() - 1);
                     p.setHitTime(LocalTime.now());
+                    if (p.getLives() > 0) {
+                        Thread sfx = new Thread(lifeLost);
+                        sfx.start();
+                    }
                 }
             }
         }
