@@ -74,12 +74,12 @@ public class TheGame {
                 //flyttar monstren, hanterar om monster når item eller player via resp. metod
                 //set timer gör det möjligt att öka hastigheten hos monstren
                 boolean monsterHitItem = false;
+                int checkDeath = 0;
                 do {
                     for (Monster monster : monsterList) {
                         if (monster.getTimer() % monster.getSpeedTimer() == 0) {
                             monsterMovement(player, monster, item, terminal);
-                            if (!hitPlayer(player, monsterList, lifeLost))
-                                gameOver(gameOver, player, terminal, lev, item, bm, signs, monsterList, clearLevel);
+                            if (!hitPlayer(player, monsterList, lifeLost)) checkDeath=1;
                             if (hitItemE(item, monster)) {
                                 Thread sfx = new Thread(eHeart);
                                 sfx.start();
@@ -99,6 +99,7 @@ public class TheGame {
                         }
                         monster.setTimer(monster.getTimer() + 1);
                     }
+                    if (checkDeath==1)gameOver(gameOver, player, terminal, lev, item, bm, signs, monsterList, clearLevel);
                 } while (monsterHitItem);
 
                 //stoppar muren från att växa efter x antal omgångar
