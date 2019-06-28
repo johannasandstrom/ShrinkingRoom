@@ -36,7 +36,7 @@ public class TheGame {
         signs[0] = levelClearSign;
         signs[1] = gameOverSign;
 
-
+        //skapar ljudeffekterna
         Sfx clearLevel = new Sfx("clearLevel.wav");
         Sfx pHeart = new Sfx("pHeart.wav");
         Sfx eHeart = new Sfx("eHeart.wav");
@@ -48,6 +48,7 @@ public class TheGame {
         Thread bm = new Thread(backgroundmusic);
         bm.start();
 
+        //initiera första level
         Level lev = new Level();
         newLevel(monsterList, terminal, player, item, lev, clearLevel);
 
@@ -64,6 +65,7 @@ public class TheGame {
             do {
                 //låter processorn vila, kontroll av input endast var 5:e millisekund
                 Thread.sleep(5);
+                hitPlayer(player, monsterList, lifeLost);
                 keyStroke = terminal.pollInput();
                 timer++;
                 statusBar(terminal, player, lev);
@@ -75,7 +77,8 @@ public class TheGame {
                     for (Monster monster : monsterList) {
                         if (monster.getTimer() % monster.getSpeedTimer() == 0) {
                             monsterMovement(player, monster, item, terminal);
-                            hitPlayer(player, monsterList, lifeLost);
+                            if (!hitPlayer(player, monsterList, lifeLost))
+                                gameOver(gameOver, player, terminal, lev, item, bm, signs, monsterList, clearLevel);
                             if (hitItem(item, monster)) {
                                 Thread sfx = new Thread(eHeart);
                                 sfx.start();
@@ -303,7 +306,7 @@ public class TheGame {
     }
 
     //kollar om spelaren är på samma plats som monstret - minskar i så fall liv med 1
-    private static void hitPlayer(Player p, List<Monster> mList, Sfx lifeLost) {
+    private static boolean hitPlayer(Player p, List<Monster> mList, Sfx lifeLost) {
         for (Monster m : mList) {
             if (p.getPlayerX() == m.getMonsterX() && p.getPlayerY() == m.getMonsterY()) {
                 long iTime = Duration.between(p.getHitTime(), LocalTime.now()).getSeconds();
@@ -313,14 +316,16 @@ public class TheGame {
                     if (p.getLives() > 0) {
                         Thread sfx = new Thread(lifeLost);
                         sfx.start();
-                    }
+                    } else return false;
                 }
             }
         }
+        return true;
     }
 
     private static void gameOver(Sfx gameOver, Player p, Terminal terminal, Level lev, Item item, Thread bm, Sign[] signs, List<Monster> monsterList, Sfx clearLevel) throws Exception {
         displayMessage(signs[1].getSignDesign(), terminal, 1);
+        statusBar(terminal, p, lev);
         Thread sfx = new Thread(gameOver);
         sfx.start();
         boolean hasResponded = false;
@@ -384,7 +389,8 @@ public class TheGame {
         item.setItemY(lev.getStartRow() + 1 + ThreadLocalRandom.current().nextInt(lev.getRows() - lev.getStartRow() - 2));
 
         terminal.setCursorPosition(player.getPlayerX(), player.getPlayerY());
-        terminal.setForegroundColor(CYAN);
+        if (lev.level == 1) terminal.setForegroundColor(WHITE);
+        else terminal.setForegroundColor(CYAN);
         terminal.putCharacter(player.getPlayerChar());
 
         for (Monster monster : monsterList) {
