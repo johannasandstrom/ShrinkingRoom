@@ -141,19 +141,19 @@ public class TheGame {
 
             switch (type) {
                 case ArrowUp:
-                    if (!isWall(player.getPlayerX(), player.getPlayerY() - 1, lev.getStartCol(), lev.getStartRow()))
+                    if (isNotWall(player.getPlayerX(), player.getPlayerY() - 1, lev.getStartCol(), lev.getStartRow()))
                         player.setPlayerY(oldPPosY - 1);
                     break;
                 case ArrowDown:
-                    if (!isWall(player.getPlayerX(), player.getPlayerY() + 1, lev.getCols() - 1, lev.getRows() - 1))
+                    if (isNotWall(player.getPlayerX(), player.getPlayerY() + 1, lev.getCols() - 1, lev.getRows() - 1))
                         player.setPlayerY(oldPPosY + 1);
                     break;
                 case ArrowRight:
-                    if (!isWall(player.getPlayerX() + 1, player.getPlayerY(), lev.getCols() - 1, lev.getRows() - 1))
+                    if (isNotWall(player.getPlayerX() + 1, player.getPlayerY(), lev.getCols() - 1, lev.getRows() - 1))
                         player.setPlayerX(oldPPosX + 1);
                     break;
                 case ArrowLeft:
-                    if (!isWall(player.getPlayerX() - 1, player.getPlayerY(), lev.getStartCol(), lev.getStartRow()))
+                    if (isNotWall(player.getPlayerX() - 1, player.getPlayerY(), lev.getStartCol(), lev.getStartRow()))
                         player.setPlayerX(oldPPosX - 1);
                     break;
             }
@@ -223,8 +223,8 @@ public class TheGame {
     }
 
     //kollar om en viss position är upptagen av väggen
-    private static boolean isWall(int x, int y, int wallX, int wallY) {
-        return (x == wallX || y == wallY);
+    private static boolean isNotWall(int x, int y, int wallX, int wallY) {
+        return !(x == wallX || y == wallY);
     }
 
     //hanterar monsternas rörelser - ska de röra sig mot item eller spelare? + ritar upp monstrets nya pos, tar bort den gamla
